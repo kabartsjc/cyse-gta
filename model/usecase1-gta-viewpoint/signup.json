@@ -1,0 +1,17 @@
+{
+    "_comment_route":"http://localhost:8080/api/v1/auth/signup",
+    "_comment_UX":"the interface must ensure that all the fields are filled and password accomplish the pattern contained in the password_regex.txt",
+    
+    "login": "lucas",
+    "password": "123456",
+    "email": "adebarro@gmu.edu",
+    "GMU_ID":"00783879",
+    "role": "GTA",
+
+    "_comment_GTA_FIELD":"in this route allways will be a GTA",
+
+    "_comment_return_SUCESS":"User created successfully",
+    "_comment_return_ERROR":"Failed to create user (user already exist)"
+
+
+}
