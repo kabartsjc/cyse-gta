@@ -8,6 +8,7 @@ import { parseJwt, handleLogError } from '../misc/Helpers'
 function Login() {
   const Auth = useAuth()
   const isLoggedIn = Auth.userIsAuthenticated()
+  const { getUser } = useAuth()
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -54,8 +55,16 @@ function Login() {
     }
   }
 
+  const user = getUser();
+
   if (isLoggedIn) {
-    return <Navigate to={'/home'} />
+
+    if (user && user.data && user.data.rol && user.data.rol[0] === 'ADMIN') {
+      return <Navigate to="/admin" />;
+    } else if (user && user.data && user.data.rol && user.data.rol[0] === 'USER') {
+      return <Navigate to="/home" />;
+    }
+    //return <Navigate to={'/home'} />
   }
 
   return (

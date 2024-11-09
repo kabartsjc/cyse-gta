@@ -52,7 +52,7 @@ async function submitApplication(user, config,  formData) {
     
     const response = await instance.post('/gta/application', formData, config);
 
-    return response.data;
+    return response;
     
   } catch (error) {
     console.error('Error submitting application:', error);

@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 
 
 
-function UserPage() {
+function ApplicationPage() {
   const Auth = useAuth();
   const user = Auth.getUser();
   const isUser = user.data.rol[0] === 'USER';
@@ -225,25 +225,30 @@ function UserPage() {
         const config = {
           headers: {
             //"Content-Type": "application/json",
-           // 'Content-Type': 'multipart/form-data',
+            // 'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`,
           },
         };
 
 
-        let response = await gtaApi.submitApplication(user,config, formData);
+        let response = await gtaApi.submitApplication(user, config, formData);
+        console.log("Full Response:", response);
 
 
-        if (response.status === 401){
+
+        // Check for 401 status to handle token renewal
+        if (response?.status === 401) {
           await gtaApi.renewToken(); // Call your token renewal function here
           config.headers["Authorization"] = `Bearer ${localStorage.getItem("authToken")}`;
 
-          response = await gtaApi.submitApplication(user,config, formData);
-
+          response = await gtaApi.submitApplication(user, config, formData);
         }
-        
-        
-        else if (response.status === 200) {
+
+        console.log("Response Status:", response.status);
+        console.log("Response Data:", response.data);
+
+
+        if (response?.status === 200) {
           Swal.fire({
             title: 'Success',
             text: 'Application submitted successfully!',
@@ -253,7 +258,7 @@ function UserPage() {
         } else {
           Swal.fire({
             title: 'Unexpected Response',
-            text: 'The server returned an unexpected response. Please try again.',
+            text: `The server returned an unexpected response: ${response?.status || 'No Status'}..`,
             icon: 'warning',
             confirmButtonText: 'OK'
           });
@@ -268,7 +273,7 @@ function UserPage() {
       }
 
     } catch (error) {
-      
+
       // Log error and display an error alert
       console.error('Submission error:', error);
       Swal.fire({
@@ -280,7 +285,7 @@ function UserPage() {
     }
   };
 
-  
+
 
   // Create the selected courses based on grades A or B
   useEffect(() => {
@@ -491,4 +496,4 @@ function UserPage() {
   );
 }
 
-export default UserPage
+export default ApplicationPage

@@ -7,7 +7,7 @@ import Home from './components/home/Home'
 import Login from './components/home/Login'
 import Signup from './components/home/Signup'
 import AdminPage from './components/admin/AdminPage'
-import UserPage from './components/user/UserPage'
+import ApplicationPage from './components/user/ApplicationPage'
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
           <Route path='/signup' element={<Signup />} />
           <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
           <Route path="/adminpage" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
-          <Route path="/userpage" element={<PrivateRoute><UserPage /></PrivateRoute>} />
+          <Route path="/applicationpage" element={<PrivateRoute><ApplicationPage /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
