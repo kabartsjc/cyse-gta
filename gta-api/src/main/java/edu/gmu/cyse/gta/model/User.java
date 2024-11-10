@@ -1,18 +1,15 @@
 package edu.gmu.cyse.gta.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Data
 @NoArgsConstructor
@@ -32,10 +29,10 @@ public class User {
     private String name;
     private String email;
     private String gmuID;
+    
+    private boolean hasApplication=false;
+    
     private String role;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orders = new ArrayList<>();
 
     public User(String username, String password, String name, String email, String gmuID, String role) {
         this.username = username;
@@ -45,4 +42,8 @@ public class User {
         this.email = email;
         this.role = role;
     }
+    
+    
+    
+   
 }

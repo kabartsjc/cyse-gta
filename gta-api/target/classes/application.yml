@@ -1,9 +1,14 @@
 spring:
   application:
-    name: order-api
+    name: gta-api
   jpa:
     hibernate:
       ddl-auto: create
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: gtadb		
   datasource:
     url: jdbc:postgresql://localhost:5432/gtadb
     username: postgres

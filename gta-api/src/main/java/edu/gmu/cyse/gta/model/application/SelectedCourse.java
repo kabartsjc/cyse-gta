@@ -1,8 +1,17 @@
 package edu.gmu.cyse.gta.model.application;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 public class SelectedCourse {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private String id;
+
 	private String courseID;
-	private int order;
+	
+    private int order;
 
 	public SelectedCourse(String courseID, int order) {
 		super();
@@ -20,7 +29,5 @@ public class SelectedCourse {
 	public int getOrder() {
 		return order;
 	}
-
-
 
 }

@@ -6,48 +6,48 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import edu.gmu.cyse.gta.model.application.Application;
-import edu.gmu.cyse.gta.model.application.GTACourseHistory;
+import edu.gmu.cyse.gta.model.application.GTAApplication;
+import edu.gmu.cyse.gta.model.application.GTAHistoryCourse;
 import edu.gmu.cyse.gta.model.application.SelectedCourse;
-import edu.gmu.cyse.gta.model.application.StudentHistory;
+import edu.gmu.cyse.gta.model.application.StudentRecord;
 
 public class ApplicationJSONParser {
 	
-	public static Application parserApplication(String username, String msg) {
+	public static GTAApplication parserApplication(String username, String msg) {
 		JSONObject json = new JSONObject(msg);
 		boolean isInternationalStudent = json.getBoolean("isInternationalStudent");
 		boolean wasGTA = json.getBoolean("wasGTACB");
 		
-		Application app = new Application(username,isInternationalStudent, wasGTA);
+		GTAApplication app = new GTAApplication(username,isInternationalStudent, wasGTA);
 		
 		if (wasGTA) {
 			JSONArray gtaCourseHistory = json.getJSONArray("gtaCourseHistory");
-			List<GTACourseHistory> courseHistL = new ArrayList<GTACourseHistory>();
+			List<GTAHistoryCourse> courseHistL = new ArrayList<GTAHistoryCourse>();
 			for (int i=0; i<gtaCourseHistory.length();i++) {
 				JSONObject jsonObject = gtaCourseHistory.getJSONObject(i);
 	            String cyseId = jsonObject.getString("cyseId");
 	            String semester = jsonObject.getString("semester");
 	            String year = jsonObject.getString("year");
-	            GTACourseHistory gtaCourseHist = new GTACourseHistory(cyseId, semester, year);
+	            GTAHistoryCourse gtaCourseHist = new GTAHistoryCourse(cyseId, semester, year);
 	            courseHistL.add(gtaCourseHist);
 			}
 			
-			app.setGtaCourseHistoryList(courseHistL);
+			app.setGTAHistoryCourses(courseHistL);
 			
 		}
 				
 		JSONArray studentHistory = json.getJSONArray("studentHistory");
-		List<StudentHistory> studentHistL = new ArrayList<StudentHistory>();
+		List<StudentRecord> studentHistL = new ArrayList<StudentRecord>();
 		for (int i=0; i<studentHistory.length();i++) {
 			JSONObject jsonObject = studentHistory.getJSONObject(i);
             String cyseId = jsonObject.getString("cyseId");
             String semester = jsonObject.getString("semester");
             String year = jsonObject.getString("year");
             String grade = jsonObject.getString("grade");
-            StudentHistory stHis = new StudentHistory(cyseId, semester, year, grade);
+            StudentRecord stHis = new StudentRecord(cyseId, semester, year, grade);
             studentHistL.add(stHis);
 		}
-		app.setStudentHistoryList(studentHistL);
+		app.setStudentRecords(studentHistL);
 
 		JSONArray selectedCourses = json.getJSONArray("selectedCourses");
 		List<SelectedCourse>selCourseList = new ArrayList<SelectedCourse>();

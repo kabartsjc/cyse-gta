@@ -1,12 +1,20 @@
 package edu.gmu.cyse.gta.model.application;
 
-public class StudentHistory {
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+public class StudentRecord {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private String id;
+
 	private String cyseId;
 	private String semester;
 	private String year;
 	private String grade;
-
-	public StudentHistory(String cyseId, String semester, String year, String grade) {
+	
+	public StudentRecord(String cyseId, String semester, String year, String grade) {
 		super();
 		this.cyseId = cyseId;
 		this.semester = semester;
@@ -14,7 +22,7 @@ public class StudentHistory {
 		this.grade=grade;
 	}
 	
-	public StudentHistory() {
+	public StudentRecord() {
 		
 	}
 

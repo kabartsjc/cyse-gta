@@ -1,19 +1,27 @@
 package edu.gmu.cyse.gta.model.application;
 
-public class GTACourseHistory {
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+public class GTAHistoryCourse {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private String id;
+
 	private String cyseId;
 	private String semester;
 	private String year;
 
-	public GTACourseHistory(String cyseId, String semester, String year) {
+	public GTAHistoryCourse(String cyseId, String semester, String year) {
 		super();
 		this.cyseId = cyseId;
 		this.semester = semester;
 		this.year = year;
 	}
-	
-	public GTACourseHistory() {
-		
+
+	public GTAHistoryCourse() {
+
 	}
 
 	public String getCyseId() {

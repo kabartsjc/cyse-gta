@@ -3,51 +3,54 @@ package edu.gmu.cyse.gta.model.application;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Application {
-	
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+public class GTAApplication {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private String id;
+
 	private String username;
 
 	private boolean isInternationalStudent = false;
 	private boolean wasGTA = false;
 
-	private List<GTACourseHistory> gtaCourseHistoryList;
+	private List<GTAHistoryCourse> gtaHistoryCourses;
 
-	private List<StudentHistory> studentHistoryList;
+	private List<StudentRecord> studentRecords;
 
 	private List<SelectedCourse> selectedCourses;
 
-	public Application() {
-		this.gtaCourseHistoryList=new ArrayList<GTACourseHistory>();
-		this.studentHistoryList=new ArrayList<StudentHistory>();
+	public GTAApplication() {
+		this.gtaHistoryCourses = new ArrayList<GTAHistoryCourse>();
+		this.studentRecords = new ArrayList<StudentRecord>();
 		this.selectedCourses = new ArrayList<SelectedCourse>();
 
 	}
 
-	public Application(String username, boolean isInternationalStudent, boolean wasGTA) {
+	public GTAApplication(String username, boolean isInternationalStudent, boolean wasGTA) {
 		super();
-		this.username=username;
+		this.username = username;
 		this.isInternationalStudent = isInternationalStudent;
 		this.wasGTA = wasGTA;
 
-		this.gtaCourseHistoryList=new ArrayList<GTACourseHistory>();
-		this.studentHistoryList=new ArrayList<StudentHistory>();
+		this.gtaHistoryCourses = new ArrayList<GTAHistoryCourse>();
+		this.studentRecords = new ArrayList<StudentRecord>();
 		this.selectedCourses = new ArrayList<SelectedCourse>();
 	}
 
-	public List<GTACourseHistory> getGtaCourseHistoryList() {
-		return gtaCourseHistoryList;
+	public void setGTAHistoryCourses(List<GTAHistoryCourse> gtaCourseHistoryList) {
+		this.gtaHistoryCourses = gtaCourseHistoryList;
 	}
 
-	public void setGtaCourseHistoryList(List<GTACourseHistory> gtaCourseHistoryList) {
-		this.gtaCourseHistoryList = gtaCourseHistoryList;
+	public List<StudentRecord> getStudentRecords() {
+		return studentRecords;
 	}
 
-	public List<StudentHistory> getStudentHistoryList() {
-		return studentHistoryList;
-	}
-
-	public void setStudentHistoryList(List<StudentHistory> studentHistoryList) {
-		this.studentHistoryList = studentHistoryList;
+	public void setStudentRecords(List<StudentRecord> studentRecords) {
+		this.studentRecords = studentRecords;
 	}
 
 	public List<SelectedCourse> getSelectedCourse() {
@@ -70,9 +73,24 @@ public class Application {
 		return selectedCourses;
 	}
 	
+	public String getId() {
+		return id;
+	}
+
 	public String getUsername() {
 		return username;
 	}
 
-	
+	public List<GTAHistoryCourse> getGtaHistoryCourses() {
+		return gtaHistoryCourses;
+	}
+
+	public void setWasGTA(boolean wasGTA) {
+		this.wasGTA = wasGTA;
+	}
+
+	public void setInternationalStudent(boolean internationalStudent) {
+		this.isInternationalStudent = internationalStudent;
+	}
+
 }

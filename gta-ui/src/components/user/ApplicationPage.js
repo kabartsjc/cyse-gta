@@ -413,7 +413,7 @@ function ApplicationPage() {
         </Segment>
 
         <Segment>
-          <h4>CYSE Student History</h4>
+          <h4>CYSE Student Records</h4>
           <Table celled>
             <Table.Header>
               <Table.Row>
