@@ -13,12 +13,12 @@ import edu.gmu.cyse.gta.model.application.StudentHistory;
 
 public class ApplicationJSONParser {
 	
-	public static Application parserApplication(String msg) {
+	public static Application parserApplication(String username, String msg) {
 		JSONObject json = new JSONObject(msg);
 		boolean isInternationalStudent = json.getBoolean("isInternationalStudent");
 		boolean wasGTA = json.getBoolean("wasGTACB");
 		
-		Application app = new Application(isInternationalStudent, wasGTA);
+		Application app = new Application(username,isInternationalStudent, wasGTA);
 		
 		if (wasGTA) {
 			JSONArray gtaCourseHistory = json.getJSONArray("gtaCourseHistory");

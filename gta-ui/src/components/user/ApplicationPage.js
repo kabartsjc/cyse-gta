@@ -146,6 +146,13 @@ function ApplicationPage() {
 
       let form_error_descript = ""
 
+      const user = Auth.getUser();
+      console.log("username:", user.data.preferred_username); // Debug line
+
+
+      formData.append('username',user.data.preferred_username)
+      
+
 
       if (cvFile) {
         formData.append('cvFile', cvFile);

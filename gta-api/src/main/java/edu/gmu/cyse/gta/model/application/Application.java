@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Application {
+	
+	private String username;
 
 	private boolean isInternationalStudent = false;
 	private boolean wasGTA = false;
@@ -21,8 +23,9 @@ public class Application {
 
 	}
 
-	public Application(boolean isInternationalStudent, boolean wasGTA) {
+	public Application(String username, boolean isInternationalStudent, boolean wasGTA) {
 		super();
+		this.username=username;
 		this.isInternationalStudent = isInternationalStudent;
 		this.wasGTA = wasGTA;
 
@@ -65,6 +68,10 @@ public class Application {
 
 	public List<SelectedCourse> getSelectedCourses() {
 		return selectedCourses;
+	}
+	
+	public String getUsername() {
+		return username;
 	}
 
 	
