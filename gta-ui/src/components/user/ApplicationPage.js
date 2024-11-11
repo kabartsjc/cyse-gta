@@ -9,6 +9,22 @@ import Swal from 'sweetalert2';
 
 
 function ApplicationPage() {
+  useEffect(() => {
+    // Show popup before the page is available
+    Swal.fire({
+      title: 'Welcome',
+      text: 'Please review your application details before submission.\n'+
+      'If you already submited the application before, the new application will replace the previous one.',
+      icon: 'info',
+      confirmButtonText: 'Proceed',
+      allowOutsideClick: false, // Prevent clicking outside to close
+      allowEscapeKey: false,   // Prevent using the escape key to close
+    }).then(() => {
+      console.log("Popup closed, user is viewing the page now.");
+    });
+  }, []);
+
+
   const Auth = useAuth();
   const user = Auth.getUser();
   const isUser = user.data.rol[0] === 'USER';
@@ -17,7 +33,12 @@ function ApplicationPage() {
   const [introGTAVideo, setIntroGTAVideo] = useState(null);
 
   const [isInternationalStudentCB, setIsInternationalStudentCB] = useState(false);
+
+  const [isCYSEStudent, setCYSEStudentCB] = useState(true);
+
   const [celtdCertFile, setCeltdCertFile] = useState(null);
+  const [noCYSEStdTranscriptFile, setnoCYSEStdTranscriptFile] = useState(null);
+  
   const [toeflScoreFile, setToeflScoreFile] = useState(null);
 
   const [wasGTACB, setWasGTACB] = useState(false);
@@ -100,6 +121,12 @@ function ApplicationPage() {
     setIsInternationalStudentCB(checked);
   };
 
+  const handleCYSECheckboxChange = (e, { checked }) => {
+    setCYSEStudentCB(checked);
+  };
+
+
+
   const handleGTAHistCheckboxChange = (e, { checked }) => {
     setWasGTACB(checked);
   };
@@ -137,6 +164,8 @@ function ApplicationPage() {
     setSelectedCourses(updatedCourses);
   };
 
+  
+
   const handleSubmitApplication = async () => {
     try {
       // Create a FormData object to hold the files
@@ -150,8 +179,8 @@ function ApplicationPage() {
       console.log("username:", user.data.preferred_username); // Debug line
 
 
-      formData.append('username',user.data.preferred_username)
-      
+      formData.append('username', user.data.preferred_username)
+
 
 
       if (cvFile) {
@@ -161,7 +190,7 @@ function ApplicationPage() {
         form_error_descript += 'CV File was not submitted!\n';
       }
 
-
+      
       if (introGTAVideo) {
         formData.append('introGTAVideo', introGTAVideo);
       } else {
@@ -174,6 +203,7 @@ function ApplicationPage() {
       const applicationData = {
         isInternationalStudent: isInternationalStudentCB,
         wasGTACB: wasGTACB,
+        isCYSEStudent:isCYSEStudent
       };
 
       // Only add student history if the student was a previous GTA
@@ -188,21 +218,28 @@ function ApplicationPage() {
       }
 
       // CHECK IF THE STUDENT FILL ITS GRADE
-      if (!studentHistory || studentHistory.length === 0) {
-        form_error = true
-        form_error_descript += 'Your course grade history was not provided !\n';
+
+      if (isCYSEStudent){
+        if (!studentHistory || studentHistory.length === 0) {
+          form_error = true
+          form_error_descript += 'Your course grade historify was not provided !\n';
+        } else {
+          applicationData.studentHistory = studentHistory; // This contains previous course history with grades
+  
+        }
+  
+        if (!selectedCourses || selectedCourses.length === 0) {
+          form_error = true
+          form_error_descript += 'You did not select the courses that you want to be a GTA!\n';
+        } else {
+          applicationData.selectedCourses = selectedCourses; // This contains previous course history with grades
+        }  
       } else {
-        applicationData.studentHistory = studentHistory; // This contains previous course history with grades
-
+        if (noCYSEStdTranscriptFile) {
+          formData.append('noCYSEStdTranscriptFile', noCYSEStdTranscriptFile);
+        } 
       }
-
-      if (!selectedCourses || selectedCourses.length === 0) {
-        form_error = true
-        form_error_descript += 'You did not select the courses that you want to be a GTA!\n';
-      } else {
-        applicationData.selectedCourses = selectedCourses; // This contains previous course history with grades
-      }
-
+      
       // Include additional files only for international students
       if (isInternationalStudentCB) {
         if (celtdCertFile) {
@@ -321,7 +358,21 @@ function ApplicationPage() {
           />
           <Form.Input
             type='file'
-            label='Please prepare a short video of you teaching a technical course or lab (irrespective of whether or not you are interested in teaching a recitation or lab). The video should be less than 3 minutes. Please convert the video into an mp4 file, preferably with codec H.264 mp4. We do not accept other video file formats. The application would also be incomplete if the interview committee could not play the video. Please double-check the video quality before you submit it. Video images should be clear and steady—no blurry, up-side-down videos, etc. If you have previously applied for an ECE GTA position and have already submitted your video, you do not need to submit the video again. We have a record of the video and can extract it from our files.'
+            label={
+              <div> <h3>Video Submission Guidelines:</h3>
+                <ul>
+                  <il> - Please prepare a short video of you teaching a technical course or lab (irrespective of whether or not you are interested in teaching a recitation or lab).<br /></il>
+                  <il> - The video should be less than 3 minutes. <br /></il>
+                  <il> - Please convert the video into an mp4 file, preferably with codec H.264 mp4.<br /></il>
+                  <br />
+                  <il> - <b>We do not accept other video file formats.</b> <br /></il>
+                  <il> - The application would also be incomplete if the interview committee could not play the video.<br /></il>
+                  <il> -  Please double-check the video quality before you submit it. Video images should be clear and steady—no blurry, up-side-down videos, etc.<br /> </il>
+
+                </ul>
+               
+              </div>
+            }
             onChange={(e) => handleFileChange(e, setIntroGTAVideo)}
           />
         </Segment>
@@ -414,59 +465,84 @@ function ApplicationPage() {
 
         <Segment>
           <h4>CYSE Student Records</h4>
-          <Table celled>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>CYSE ID</Table.HeaderCell>
-                <Table.HeaderCell>SEMESTER</Table.HeaderCell>
-                <Table.HeaderCell>YEAR</Table.HeaderCell>
-                <Table.HeaderCell>GRADE</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
+          <Form.Field>
+            <Form.Checkbox
+              label='Are you an CYSE student?'
+              checked={isCYSEStudent}
+              onChange={handleCYSECheckboxChange}
+            />
+          </Form.Field>
 
-            <Table.Body>
-              {studentHistory.map((entry, index) => (
-                <Table.Row key={index}>
-                  <Table.Cell>
-                    <Dropdown
-                      selection
-                      options={courseOptions}
-                      value={entry.cyseId}
-                      onChange={(e, { value }) => handleStudentHistoryChange(index, 'cyseId', value)}
-                      placeholder='Select Course'
-                    />
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Dropdown
-                      selection
-                      options={semesterOptions}
-                      value={entry.semester}
-                      onChange={(e, { value }) => handleStudentHistoryChange(index, 'semester', value)}
-                      placeholder='Select Semester'
-                    />
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Form.Input
-                      value={entry.year}
-                      onChange={(e) => handleStudentHistoryChange(index, 'year', e.target.value)}
-                      placeholder='Enter Year'
-                    />
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Dropdown
-                      selection
-                      options={gradeOptions}
-                      value={entry.grade}
-                      onChange={(e, { value }) => handleStudentHistoryChange(index, 'grade', value)}
-                      placeholder='Select Grade'
-                    />
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
+          {isCYSEStudent && (
+            <>
+              <Table celled>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell>CYSE ID</Table.HeaderCell>
+                    <Table.HeaderCell>SEMESTER</Table.HeaderCell>
+                    <Table.HeaderCell>YEAR</Table.HeaderCell>
+                    <Table.HeaderCell>GRADE</Table.HeaderCell>
+                  </Table.Row>
+                </Table.Header>
 
-          <Button onClick={addStudentHistoryRow} primary>Add Row</Button>
+                <Table.Body>
+                  {studentHistory.map((entry, index) => (
+                    <Table.Row key={index}>
+                      <Table.Cell>
+                        <Dropdown
+                          selection
+                          options={courseOptions}
+                          value={entry.cyseId}
+                          onChange={(e, { value }) => handleStudentHistoryChange(index, 'cyseId', value)}
+                          placeholder='Select Course'
+                        />
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Dropdown
+                          selection
+                          options={semesterOptions}
+                          value={entry.semester}
+                          onChange={(e, { value }) => handleStudentHistoryChange(index, 'semester', value)}
+                          placeholder='Select Semester'
+                        />
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Form.Input
+                          value={entry.year}
+                          onChange={(e) => handleStudentHistoryChange(index, 'year', e.target.value)}
+                          placeholder='Enter Year'
+                        />
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Dropdown
+                          selection
+                          options={gradeOptions}
+                          value={entry.grade}
+                          onChange={(e, { value }) => handleStudentHistoryChange(index, 'grade', value)}
+                          placeholder='Select Grade'
+                        />
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+
+              <Button onClick={addStudentHistoryRow} primary>Add Row</Button>
+            </>
+          )}
+
+          {!isCYSEStudent && (
+            <>
+
+              <Form.Input
+                type='file'
+                label='If you are not CYSE student, submit your transcript (PDF format), where you have the ifnormation about the undergraduate and graduate courses that you take using this format: UNIVERSITY, COURSE NAME, YEAR, GRADE (A,B,C,D,F)'
+                onChange={(e) => handleFileChange(e, setnoCYSEStdTranscriptFile)}
+              />
+            </>
+          )}
+
+
         </Segment>
 
         {/* New Segment for Selected Courses */}

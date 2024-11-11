@@ -16,6 +16,8 @@ public class GTAApplication {
 
 	private boolean isInternationalStudent = false;
 	private boolean wasGTA = false;
+	
+	private boolean isCYSEStudent=true;
 
 	private List<GTAHistoryCourse> gtaHistoryCourses;
 
@@ -30,11 +32,12 @@ public class GTAApplication {
 
 	}
 
-	public GTAApplication(String username, boolean isInternationalStudent, boolean wasGTA) {
+	public GTAApplication(String username, boolean isCYSEStudent, boolean isInternationalStudent, boolean wasGTA) {
 		super();
 		this.username = username;
 		this.isInternationalStudent = isInternationalStudent;
 		this.wasGTA = wasGTA;
+		this.isCYSEStudent=isCYSEStudent;
 
 		this.gtaHistoryCourses = new ArrayList<GTAHistoryCourse>();
 		this.studentRecords = new ArrayList<StudentRecord>();
@@ -92,5 +95,16 @@ public class GTAApplication {
 	public void setInternationalStudent(boolean internationalStudent) {
 		this.isInternationalStudent = internationalStudent;
 	}
+
+	public boolean isCYSEStudent() {
+		return isCYSEStudent;
+	}
+
+	public void setCYSEStudent(boolean isCYSEStudent) {
+		this.isCYSEStudent = isCYSEStudent;
+	}
+	
+	
+	
 
 }

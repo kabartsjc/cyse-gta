@@ -72,7 +72,8 @@ public class AuthController {
 
         userService.saveUser(mapSignUpRequestToUser(signUpRequest));
 
-        String token = authenticateAndGetToken(signUpRequest.getUsername(), signUpRequest.getPassword());
+        String token = authenticateAndGetToken(signUpRequest.getUsername(), 
+        		signUpRequest.getPassword());
         return new AuthResponse(token);
     }
 
@@ -87,6 +88,7 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.setName(signUpRequest.getName());
         user.setEmail(signUpRequest.getEmail());
+        user.setGmuID(signUpRequest.getGmuID());
         user.setRole(WebSecurityConfig.USER);
         return user;
     }

@@ -3,7 +3,6 @@ package edu.gmu.cyse.gta.rest;
 import static edu.gmu.cyse.gta.config.SwaggerConfig.BEARER_KEY_SECURITY_SCHEME;
 
 import java.io.File;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -48,6 +47,7 @@ public class ApplicationController {
 			@RequestParam("application_data") String applicationDataJson, // Handle application data as JSON string
 			@RequestParam(value = "celtdCertFile", required = false) MultipartFile celtdCertFile,
 			@RequestParam(value = "toeflScoreFile", required = false) MultipartFile toeflScoreFile,
+			@RequestParam(value = "noCYSEStdTranscriptFile", required = false) MultipartFile noCYSEStdTranscriptFile,
 			@RequestParam("username") String username) {
 
 		try {
@@ -57,9 +57,8 @@ public class ApplicationController {
 			String error_msg = "Your application is incompleted. It contains these errors:\n";
 
 			User user = userService.getUserByUsername(username).orElse(null);
-			if (user==null)
+			if (user == null)
 				throw new InvalidFileTypeException("An unexpected error occurred.");
-
 
 			if (username != null) {
 				application_exists = gtaApplicationService.hasGTAApplicationWithUsername(username);
@@ -92,7 +91,7 @@ public class ApplicationController {
 					String contentType = cvFile.getContentType();
 					if (contentType != null && !contentType.equals("application/pdf")) {
 						error = true;
-						error_msg=error_msg+"- Uploaded cv file is not a PDF!\n";
+						error_msg = error_msg + "- Uploaded cv file is not a PDF!\n";
 					} else {
 						String filePath = userFolderPath + File.separator + "cv.pdf";
 						Files.copy(cvFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
@@ -105,11 +104,12 @@ public class ApplicationController {
 					if (fileExtension.equalsIgnoreCase("mp4") || fileExtension.equalsIgnoreCase("avi")
 							|| fileExtension.equalsIgnoreCase("mpeg")) {
 						String filePath = userFolderPath + File.separator + "gta_video";
-						Files.copy(introGTAVideo.getInputStream(), Paths.get(filePath),StandardCopyOption.REPLACE_EXISTING);
+						Files.copy(introGTAVideo.getInputStream(), Paths.get(filePath),
+								StandardCopyOption.REPLACE_EXISTING);
 
 					} else {
 						error = true;
-						error_msg=error_msg+"- Uploaded MP4, MPEG or AVI file to your video!!\n";
+						error_msg = error_msg + "- Uploaded MP4, MPEG or AVI file to your video!!\n";
 					}
 
 				}
@@ -119,10 +119,11 @@ public class ApplicationController {
 						String contentType = celtdCertFile.getContentType();
 						if (contentType != null && !contentType.equals("application/pdf")) {
 							error = true;
-							error_msg=error_msg+"- Uploaded CELTD file is not a PDF!\n";
+							error_msg = error_msg + "- Uploaded CELTD file is not a PDF!\n";
 						} else {
 							String filePath = userFolderPath + File.separator + "celtd.pdf";
-							Files.copy(celtdCertFile.getInputStream(), Paths.get(filePath),StandardCopyOption.REPLACE_EXISTING);
+							Files.copy(celtdCertFile.getInputStream(), Paths.get(filePath),
+									StandardCopyOption.REPLACE_EXISTING);
 						}
 					}
 
@@ -130,12 +131,28 @@ public class ApplicationController {
 						String contentType = toeflScoreFile.getContentType();
 						if (contentType != null && !contentType.equals("application/pdf")) {
 							error = true;
-							error_msg=error_msg+"- Uploaded TOELF file is not a PDF!\n";
+							error_msg = error_msg + "- Uploaded TOELF file is not a PDF!\n";
 						} else {
 							String filePath = userFolderPath + File.separator + "toelf.pdf";
-							Files.copy(toeflScoreFile.getInputStream(), Paths.get(filePath),StandardCopyOption.REPLACE_EXISTING);
+							Files.copy(toeflScoreFile.getInputStream(), Paths.get(filePath),
+									StandardCopyOption.REPLACE_EXISTING);
 						}
 
+					}
+
+				}
+
+				if (application.isCYSEStudent() == false) {
+					if (noCYSEStdTranscriptFile != null) {
+						String contentType = noCYSEStdTranscriptFile.getContentType();
+						if (contentType != null && !contentType.equals("application/pdf")) {
+							error = true;
+							error_msg = error_msg + "- Uploaded NO CYSE transcript file is not a PDF!\n";
+						} else {
+							String filePath = userFolderPath + File.separator + "nocyse_transcript.pdf";
+							Files.copy(noCYSEStdTranscriptFile.getInputStream(), Paths.get(filePath),
+									StandardCopyOption.REPLACE_EXISTING);
+						}
 					}
 
 				}
@@ -146,7 +163,7 @@ public class ApplicationController {
 
 			if (error)
 				throw new InvalidFileTypeException(error_msg);
-			else 
+			else
 				return ResponseEntity.ok("Application submitted successfully");
 
 		} catch (InvalidFileTypeException e) {
