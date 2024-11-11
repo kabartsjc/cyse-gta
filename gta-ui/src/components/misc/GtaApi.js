@@ -14,8 +14,10 @@ export const gtaApi = {
   createOrder,
   getUserMe,
   submitApplication,
-  renewToken
+  renewToken,
+  loadGTAApplicationInfo
 }
+
 
 function authenticate(username, password) {
   return instance.post('/auth/authenticate', { username, password }, {
@@ -38,24 +40,44 @@ function signup(user) {
   })
 }
 
-async function submitApplication(user, config,  formData) {
+async function submitApplication(user, config, formData) {
   try {
     // Combine application data and files in FormData
     //const data = new FormData();
-   // Object.keys(applicationData).forEach(key => {
-     // formData.append(key, JSON.stringify(applicationData[key])); // Handle JSON objects
-  //  });
+    // Object.keys(applicationData).forEach(key => {
+    // formData.append(key, JSON.stringify(applicationData[key])); // Handle JSON objects
+    //  });
 
     // Append files from formData
-   // formData.forEach((value, key) => data.append(key, value));
+    // formData.forEach((value, key) => data.append(key, value));
 
-    
+
     const response = await instance.post('/gta/application', formData, config);
 
     return response;
-    
+
   } catch (error) {
     console.error('Error submitting application:', error);
+    throw error;
+  }
+}
+
+function loadGTAApplicationInfo(user, config) {
+  try {
+    const username = user.data.preferred_username;
+    console.log(username);
+
+    // Assuming you're sending 'username' as a query parameter
+    const response = instance.get('/app/gtainfo', {
+      params: {
+        gta_param_name: username  // Send username as a query parameter
+      },
+      ...config  // Spread the config to include Authorization headers and any other settings
+    });
+
+    return response;
+  } catch (error) {
+    console.error('Error fetching data:', error);
     throw error;
   }
 }

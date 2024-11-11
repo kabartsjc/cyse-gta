@@ -22,7 +22,9 @@ import edu.gmu.cyse.gta.exception.InvalidFileTypeException;
 import edu.gmu.cyse.gta.json.ApplicationJSONParser;
 import edu.gmu.cyse.gta.model.User;
 import edu.gmu.cyse.gta.model.application.GTAApplication;
+import edu.gmu.cyse.gta.model.application.GTAApplicationInfo;
 import edu.gmu.cyse.gta.security.CustomUserDetails;
+import edu.gmu.cyse.gta.service.GTAApplicationInfoServiceImpl;
 import edu.gmu.cyse.gta.service.GTAApplicationServiceImpl;
 import edu.gmu.cyse.gta.service.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +35,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 public class ApplicationController {
 	@Autowired
 	UserServiceImpl userService;
+
+	@Autowired
+	GTAApplicationInfoServiceImpl gtaAppInfoService;
 
 	@Autowired
 	GTAApplicationServiceImpl gtaApplicationService;
@@ -74,6 +79,10 @@ public class ApplicationController {
 					application = ApplicationJSONParser.parserApplication(username, applicationDataJson);
 					gtaApplicationService.saveGTAApplication(application);
 					user.setHasApplication(true);
+					
+					GTAApplicationInfo gtaAppInfo = new GTAApplicationInfo(username);
+					gtaAppInfoService.saveGTAApplicationInfo(gtaAppInfo);
+					
 					userService.saveUser(user);
 
 				} else {
