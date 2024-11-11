@@ -45,19 +45,11 @@ public class GTAApplicationServiceImpl implements GTAApplicationService {
 	    // Retrieve the existing application by username
 	    GTAApplication existingApplication = gtaApplicationRepository.findByUsername(username)
 	        .orElseThrow(() -> new RuntimeException("GTAApplication not found for username: " + username));
-
-	    // Update fields with the same values from newValues
-	    if (newValues.getGtaHistoryCourses().size()>0)
-	    	existingApplication.setGTAHistoryCourses(newValues.getGtaHistoryCourses());
-	    if (newValues.getSelectedCourse().size()>0)
-	    	existingApplication.setSelectedCourse(newValues.getSelectedCourses());
-	    if (newValues.getStudentRecords().size()>0)
-	    	existingApplication.setStudentRecords(newValues.getStudentRecords());
-	    existingApplication.setWasGTA(newValues.isWasGTA());
-	    existingApplication.setInternationalStudent(newValues.isInternationalStudent());
 	    
+	    deleteGTAApplication(existingApplication);
+
 	    // Save the updated application
-	    return gtaApplicationRepository.save(existingApplication);
+	    return gtaApplicationRepository.save(newValues);
 	}
 
 }
