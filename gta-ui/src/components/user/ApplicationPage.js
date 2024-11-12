@@ -41,9 +41,6 @@ function ApplicationPage() {
 
   const [wasGTACB, setWasGTACB] = useState(false);
   const [gtaCourseHistory, setGtaCourseHistory] = useState([{ cyseId: '', semester: '', year: '' }]);
-  const [studentHistory, setStudentHistory] = useState([{ cyseId: '', semester: '', year: '', grade: '' }]);
-
-  const [selectedCourses, setSelectedCourses] = useState([]);
 
   const semesterOptions = [
     { key: 'summer', text: 'SUMMER', value: 'SUMMER' },
@@ -127,29 +124,16 @@ function ApplicationPage() {
     setGtaCourseHistory(updatedHistory);
   };
 
-  const handleStudentHistoryChange = (index, field, value) => {
-    const updatedHistory = [...studentHistory];
-    updatedHistory[index][field] = value;
-    setStudentHistory(updatedHistory);
-  };
-
+  
   const addGtaHistoryRow = () => {
     setGtaCourseHistory([...gtaCourseHistory, { cyseId: '', semester: '', year: '' }]);
   };
 
-  const addStudentHistoryRow = () => {
-    setStudentHistory([...studentHistory, { cyseId: '', semester: '', year: '', grade: '' }]);
-  };
-
+ 
   //  const application = { username,cvFile, introGTAVideo,  isInternationalStudent, isInternationalStudent,wasGTA,studentHistoryCB,}
 
 
-  const handleOrderChange = (index, value) => {
-    const updatedCourses = [...selectedCourses];
-    updatedCourses[index].order = value;
-    setSelectedCourses(updatedCourses);
-  };
-
+  
 
 
   const handleSubmitApplication = async () => {
@@ -298,13 +282,6 @@ function ApplicationPage() {
 
 
   // Create the selected courses based on grades A or B
-  useEffect(() => {
-    const coursesToApply = studentHistory
-      .filter(entry => entry.grade === 'A' || entry.grade === 'B')
-      .map((entry, index) => ({ cyseId: entry.cyseId, order: index + 1 }));
-
-    setSelectedCourses(coursesToApply);
-  }, [studentHistory]);
 
   if (!isUser) {
     return <Navigate to='/' />;
