@@ -53,13 +53,14 @@ public class ApplicationInfoJSON {
 		
 		process_info.put("LastUpdate", info.getLast_update());
 		
-		process_info.put("CELTSTATUS", info.getCeltd_file_status());
+		process_info.put("CELTDSTATUS", info.getCeltd_file_status());
+		System.out.println(info.getCeltd_file_status());
+		
 		process_info.put("CVSTATUS", info.getCv_file_status());
 		process_info.put("TRASCRIPTSTATUS", info.getStudent_transcript());
 		process_info.put("TOEFLSTATUS", info.getToefl_file_status());
+		
 		process_info.put("VIDEOSTATUS", info.getVideo_file_status());
-		
-		
 		        
         
 		

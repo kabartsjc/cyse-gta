@@ -92,6 +92,8 @@ const Home = () => {
     return <p>No application data available.</p>;
   }
 
+  
+  console.log(data.process_info.CELTDSTATUS)
 
 
   // If user data is available, display the name, else display a default message

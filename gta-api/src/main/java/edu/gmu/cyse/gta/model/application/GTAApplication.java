@@ -19,6 +19,8 @@ public class GTAApplication {
 
 	private String period;
 	private String year;
+	
+	private String urlVideo;
 
 	private List<GTAHistoryCourse> gtaHistoryCourses;
 
@@ -26,11 +28,14 @@ public class GTAApplication {
 		this.gtaHistoryCourses = new ArrayList<GTAHistoryCourse>();
 	}
 
-	public GTAApplication(String username, boolean isInternationalStudent, boolean wasGTA, String year, String period) {
+	public GTAApplication(String username, boolean isInternationalStudent, boolean wasGTA, 
+			String year, String period, String url_video) {
 		super();
 		this.username = username;
 		this.isInternationalStudent = isInternationalStudent;
 		this.wasGTA = wasGTA;
+		
+		this.urlVideo=url_video;
 
 		this.year = year;
 		this.period = period;
@@ -78,4 +83,7 @@ public class GTAApplication {
 		return year;
 	}
 
+	public String getURLVideo() {
+		return urlVideo;
+	}
 }

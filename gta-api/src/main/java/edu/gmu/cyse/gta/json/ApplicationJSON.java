@@ -20,8 +20,10 @@ public class ApplicationJSON {
 		
 		String appyear = json.getString("appyear");
 		
+		String url_video = json.getString("introGTAVideo");
 		
-		GTAApplication app = new GTAApplication(username,isInternationalStudent, wasGTA, appyear, appperiod);
+		
+		GTAApplication app = new GTAApplication(username,isInternationalStudent, wasGTA, appyear, appperiod, url_video);
 		
 		if (wasGTA) {
 			JSONArray gtaCourseHistory = json.getJSONArray("gtaCourseHistory");

@@ -42,13 +42,13 @@ public class ApplicationController {
 	@Autowired
 	GTAApplicationServiceImpl gtaApplicationService;
 
-	private static final String BASE_DIR = "/home/kabart/gta_files";
+	public static final String BASE_DIR = "/home/kabart/gta_files";
 
 	@PostMapping(value = "/application", consumes = "multipart/form-data")
 	@Operation(security = { @SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME) })
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<String> createApplication(@AuthenticationPrincipal CustomUserDetails currentUser,
-			@RequestParam("cvFile") MultipartFile cvFile, @RequestParam("introGTAVideo") MultipartFile introGTAVideo,
+			@RequestParam(value = "cvFile", required = false) MultipartFile cvFile, 
 			@RequestParam("application_data") String applicationDataJson, // Handle application data as JSON string
 			@RequestParam(value = "celtdCertFile", required = false) MultipartFile celtdCertFile,
 			@RequestParam(value = "toeflScoreFile", required = false) MultipartFile toeflScoreFile,
@@ -58,6 +58,7 @@ public class ApplicationController {
 		try {
 			boolean application_exists = false;
 			GTAApplication application = null;
+			GTAApplicationInfo gtaAppInfo = null;
 			boolean error = false;
 			String error_msg = "Your application is incompleted. It contains these errors:\n";
 
@@ -71,6 +72,8 @@ public class ApplicationController {
 					application = gtaApplicationService.getGTAApplicationByUsername(username).orElse(null);
 					GTAApplication newapplication = ApplicationJSON.parser(username, applicationDataJson);
 					gtaApplicationService.updateGTAApplicationByUsername(username, newapplication);
+					
+					gtaAppInfo = gtaAppInfoService.getGTAApplicationByUsername(username).orElse(null);
 
 				}
 
@@ -79,7 +82,7 @@ public class ApplicationController {
 					gtaApplicationService.saveGTAApplication(application);
 					user.setHasApplication(true);
 
-					GTAApplicationInfo gtaAppInfo = new GTAApplicationInfo(username);
+					gtaAppInfo = new GTAApplicationInfo(username);
 					gtaAppInfoService.saveGTAApplicationInfo(gtaAppInfo);
 
 					userService.saveUser(user);
@@ -106,22 +109,7 @@ public class ApplicationController {
 					}
 				}
 
-				if (introGTAVideo != null) {
-					String fileName = introGTAVideo.getOriginalFilename();
-					String fileExtension = fileName != null ? fileName.substring(fileName.lastIndexOf(".") + 1) : "";
-					if (fileExtension.equalsIgnoreCase("mp4") || fileExtension.equalsIgnoreCase("avi")
-							|| fileExtension.equalsIgnoreCase("mpeg")) {
-						String filePath = userFolderPath + File.separator + "gta_video";
-						Files.copy(introGTAVideo.getInputStream(), Paths.get(filePath),
-								StandardCopyOption.REPLACE_EXISTING);
-
-					} else {
-						error = true;
-						error_msg = error_msg + "- Uploaded MP4, MPEG or AVI file to your video!!\n";
-					}
-
-				}
-
+				
 				if (application.isInternationalStudent()) {
 					if (celtdCertFile != null) {
 						String contentType = celtdCertFile.getContentType();
@@ -156,12 +144,14 @@ public class ApplicationController {
 						error = true;
 						error_msg = error_msg + "- Uploaded NO CYSE transcript file is not a PDF!\n";
 					} else {
-						String filePath = userFolderPath + File.separator + "nocyse_transcript.pdf";
+						String filePath = userFolderPath + File.separator + "transcript.pdf";
 						Files.copy(transcriptFile.getInputStream(), Paths.get(filePath),
 								StandardCopyOption.REPLACE_EXISTING);
 					}
-
 				}
+				gtaAppInfo.update(application);
+				
+				gtaAppInfoService.saveGTAApplicationInfo(gtaAppInfo);
 
 			} else
 				throw new InvalidFileTypeException(

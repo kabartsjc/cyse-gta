@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { gtaApi } from '../misc/GtaApi'
+import { useNavigate } from "react-router-dom";
+
+
 
 import { Container, Form, Button, Segment, Table, Dropdown } from 'semantic-ui-react';
 import Swal from 'sweetalert2';
@@ -23,13 +26,14 @@ function ApplicationPage() {
     });
   }, []);
 
+  const navigate = useNavigate();
+
 
   const Auth = useAuth();
   const user = Auth.getUser();
   const isUser = user.data.rol[0] === 'USER';
 
   const [cvFile, setCVFile] = useState(null);
-  const [introGTAVideo, setIntroGTAVideo] = useState(null);
 
   const [isInternationalStudentCB, setIsInternationalStudentCB] = useState(false);
 
@@ -135,6 +139,9 @@ function ApplicationPage() {
   const [appyear, setYear] = useState('');
   const [appperiod, setPeriod] = useState('');
 
+  const [introGTAVideo, setIntroGTAVideo] = useState('');
+
+
 
   // Handle the year input change
   const handleYearChange = (e) => {
@@ -144,6 +151,12 @@ function ApplicationPage() {
   const handlePeriodChange = (e, { value }) => {
     setPeriod(value);
   };
+
+  const handleVideoChange = (e, { value }) => {
+    setIntroGTAVideo(value);
+  };
+
+
 
 
   // Period dropdown options
@@ -156,12 +169,13 @@ function ApplicationPage() {
 
   const handleSubmitApplication = async () => {
 
-    
+
     try {
-      
+
       const formData = new FormData();
-      
-  
+
+
+
       let form_error = false
 
       let form_error_descript = ""
@@ -177,39 +191,30 @@ function ApplicationPage() {
 
 
 
-      if (cvFile) {
         formData.append('cvFile', cvFile);
-      } else {
-        form_error = true
-        form_error_descript += 'CV File was not submitted!\n';
-      }
-
-
-      if (introGTAVideo) {
-        formData.append('introGTAVideo', introGTAVideo);
-      } else {
-        form_error = true
-        form_error_descript += 'Introduction Video was not submitted!\n';
-      }
-
+      
 
       // Create a JSON object for the application data
       const applicationData = {
         isInternationalStudent: isInternationalStudentCB,
         wasGTACB: wasGTACB,
-        appyear:appyear,
-        appperiod:appperiod
+        appyear: appyear,
+        appperiod: appperiod,
+        introGTAVideo: introGTAVideo
 
       };
+
+      if (appyear === "" || appperiod === "") {
+        form_error = true
+        form_error_descript += 'Your must provided the YEAR and the Period of the Application!\n';
+      }
+
 
       // Only add student history if the student was a previous GTA
       if (wasGTACB) {
 
         if (gtaCourseHistory.length !== 0) {
           applicationData.gtaCourseHistory = gtaCourseHistory; // This contains previous course history with grades
-        } else {
-          form_error = true
-          form_error_descript += 'Your GTA history was not provided!\n';
         }
       }
 
@@ -221,15 +226,9 @@ function ApplicationPage() {
       if (isInternationalStudentCB) {
         if (celtdCertFile) {
           formData.append('celtdCertFile', celtdCertFile);
-        } else {
-          form_error = true
-          form_error_descript += 'You did not provide the CELTD certificate!\n';
         }
         if (toeflScoreFile) {
           formData.append('toeflScoreFile', toeflScoreFile);
-        } else {
-          form_error = true
-          form_error_descript += 'You did not provide your TOEFL report!\n';
         }
       }
 
@@ -253,6 +252,7 @@ function ApplicationPage() {
 
 
         let response = await gtaApi.submitApplication(user, config, formData);
+
         console.log("Full Response:", response);
 
 
@@ -276,6 +276,10 @@ function ApplicationPage() {
             icon: 'success',
             confirmButtonText: 'OK'
           });
+
+          if (response?.status === 200) {
+            navigate("/home");
+          }
         } else {
           Swal.fire({
             title: 'Unexpected Response',
@@ -329,17 +333,44 @@ function ApplicationPage() {
             />
           </Form.Field>
 
-            {/* Period Dropdown */}
-      <Form.Field>
-        <label>Period</label>
-        <Dropdown
-          selection
-          options={periodOptions}
-          value={appperiod}
-          onChange={handlePeriodChange}
-          placeholder="Select Period"
-        />
-      </Form.Field>
+          {/* Period Dropdown */}
+          <Form.Field>
+            <label>Period</label>
+            <Dropdown
+              selection
+              options={periodOptions}
+              value={appperiod}
+              onChange={handlePeriodChange}
+              placeholder="Select Period"
+            />
+          </Form.Field>
+
+          <Form.Field>
+            <label>
+              <div> <h3>Video Submission Guidelines:</h3>
+                <ul>
+                  <il> - Please prepare a short video of you teaching a technical course or lab (irrespective of whether or not you are interested in teaching a recitation or lab).<br /></il>
+                  <il> - The video should be less than 3 minutes. <br /></il>
+                  <il> - Please publish the video on your Youtube site.<br /></il>
+                  <il> - You must submit the link of the video.<br /></il>
+
+                  <br />
+                  <il> - <b>Check that video does not require any permission - it is public.</b> <br /></il>
+                  <il> - The application would also be incomplete if the interview committee could not play the video.<br /></il>
+                  <il> -  Please double-check the video quality before you submit it. Video images should be clear and steady—no blurry, up-side-down videos, etc.<br /> </il>
+
+                </ul>
+
+              </div>
+
+            </label>
+            <Form.Input
+              type="string"
+              value={introGTAVideo}
+              onChange={handleVideoChange}
+              placeholder="Enter the Youtube Link of the video"
+            />
+          </Form.Field>
 
 
         </Segment>
@@ -352,25 +383,8 @@ function ApplicationPage() {
             label='Submit your Curriculum-Vitae (pdf)'
             onChange={(e) => handleFileChange(e, setCVFile)}
           />
-          <Form.Input
-            type='file'
-            label={
-              <div> <h3>Video Submission Guidelines:</h3>
-                <ul>
-                  <il> - Please prepare a short video of you teaching a technical course or lab (irrespective of whether or not you are interested in teaching a recitation or lab).<br /></il>
-                  <il> - The video should be less than 3 minutes. <br /></il>
-                  <il> - Please convert the video into an mp4 file, preferably with codec H.264 mp4.<br /></il>
-                  <br />
-                  <il> - <b>We do not accept other video file formats.</b> <br /></il>
-                  <il> - The application would also be incomplete if the interview committee could not play the video.<br /></il>
-                  <il> -  Please double-check the video quality before you submit it. Video images should be clear and steady—no blurry, up-side-down videos, etc.<br /> </il>
 
-                </ul>
 
-              </div>
-            }
-            onChange={(e) => handleFileChange(e, setIntroGTAVideo)}
-          />
         </Segment>
 
         <Segment>
