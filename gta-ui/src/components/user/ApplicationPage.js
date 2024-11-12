@@ -189,7 +189,6 @@ function ApplicationPage() {
       const applicationData = {
         isInternationalStudent: isInternationalStudentCB,
         wasGTACB: wasGTACB,
-        isCYSEStudent: isCYSEStudent
       };
 
       // Only add student history if the student was a previous GTA
