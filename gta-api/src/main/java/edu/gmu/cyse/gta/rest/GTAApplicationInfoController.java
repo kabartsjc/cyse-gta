@@ -10,7 +10,6 @@ import edu.gmu.cyse.gta.model.application.GTAApplication;
 import edu.gmu.cyse.gta.model.application.GTAApplicationInfo;
 import edu.gmu.cyse.gta.service.GTAApplicationInfoServiceImpl;
 import edu.gmu.cyse.gta.service.GTAApplicationServiceImpl;
-import edu.gmu.cyse.gta.service.UserServiceImpl;
 
 
 @RestController
@@ -30,6 +29,7 @@ public class GTAApplicationInfoController {
         if (info!=null) {
         	GTAApplication app = gtaApplicationService.getGTAApplicationByUsername(gta_param_name).orElse(null);
         	if (app!=null) {
+        		
         		
         	}
         }

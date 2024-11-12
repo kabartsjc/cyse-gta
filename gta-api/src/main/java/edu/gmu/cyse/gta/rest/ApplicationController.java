@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import edu.gmu.cyse.gta.exception.InvalidFileTypeException;
-import edu.gmu.cyse.gta.json.ApplicationJSONParser;
+import edu.gmu.cyse.gta.json.ApplicationJSON;
 import edu.gmu.cyse.gta.model.User;
 import edu.gmu.cyse.gta.model.application.GTAApplication;
 import edu.gmu.cyse.gta.model.application.GTAApplicationInfo;
@@ -52,7 +52,7 @@ public class ApplicationController {
 			@RequestParam("application_data") String applicationDataJson, // Handle application data as JSON string
 			@RequestParam(value = "celtdCertFile", required = false) MultipartFile celtdCertFile,
 			@RequestParam(value = "toeflScoreFile", required = false) MultipartFile toeflScoreFile,
-			@RequestParam(value = "noCYSEStdTranscriptFile", required = false) MultipartFile noCYSEStdTranscriptFile,
+			@RequestParam(value = "transcriptFile", required = false) MultipartFile transcriptFile,
 			@RequestParam("username") String username) {
 
 		try {
@@ -69,20 +69,19 @@ public class ApplicationController {
 				application_exists = gtaApplicationService.hasGTAApplicationWithUsername(username);
 				if (application_exists) {
 					application = gtaApplicationService.getGTAApplicationByUsername(username).orElse(null);
-					GTAApplication newapplication = ApplicationJSONParser.parserApplication(username,
-							applicationDataJson);
+					GTAApplication newapplication = ApplicationJSON.parser(username, applicationDataJson);
 					gtaApplicationService.updateGTAApplicationByUsername(username, newapplication);
 
 				}
 
 				else if (applicationDataJson != null && user != null) {
-					application = ApplicationJSONParser.parserApplication(username, applicationDataJson);
+					application = ApplicationJSON.parser(username, applicationDataJson);
 					gtaApplicationService.saveGTAApplication(application);
 					user.setHasApplication(true);
-					
+
 					GTAApplicationInfo gtaAppInfo = new GTAApplicationInfo(username);
 					gtaAppInfoService.saveGTAApplicationInfo(gtaAppInfo);
-					
+
 					userService.saveUser(user);
 
 				} else {
@@ -151,17 +150,15 @@ public class ApplicationController {
 
 				}
 
-				if (application.isCYSEStudent() == false) {
-					if (noCYSEStdTranscriptFile != null) {
-						String contentType = noCYSEStdTranscriptFile.getContentType();
-						if (contentType != null && !contentType.equals("application/pdf")) {
-							error = true;
-							error_msg = error_msg + "- Uploaded NO CYSE transcript file is not a PDF!\n";
-						} else {
-							String filePath = userFolderPath + File.separator + "nocyse_transcript.pdf";
-							Files.copy(noCYSEStdTranscriptFile.getInputStream(), Paths.get(filePath),
-									StandardCopyOption.REPLACE_EXISTING);
-						}
+				if (transcriptFile != null) {
+					String contentType = transcriptFile.getContentType();
+					if (contentType != null && !contentType.equals("application/pdf")) {
+						error = true;
+						error_msg = error_msg + "- Uploaded NO CYSE transcript file is not a PDF!\n";
+					} else {
+						String filePath = userFolderPath + File.separator + "nocyse_transcript.pdf";
+						Files.copy(transcriptFile.getInputStream(), Paths.get(filePath),
+								StandardCopyOption.REPLACE_EXISTING);
 					}
 
 				}

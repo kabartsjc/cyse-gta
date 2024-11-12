@@ -17,6 +17,10 @@ public class GTAApplicationInfo {
 	private enum DECISION_STATUS {
 		inprocessing, approved, deny, incompleted, notstarted
 	}
+	
+	private enum FILE_STATUS {
+		nosubmited,inprocessing, checked, error
+	}
 
 	private DECISION_STATUS cyseAdminOfficeDecision = DECISION_STATUS.notstarted;
 	private String cyseAdminComments = "";
@@ -26,6 +30,12 @@ public class GTAApplicationInfo {
 
 	private String courseAllocated;
 	private boolean contractSigned = false;
+	
+	private FILE_STATUS cv_file_status = FILE_STATUS.inprocessing;
+	private FILE_STATUS video_file_status= FILE_STATUS.inprocessing;
+	private FILE_STATUS celtd_file_status= FILE_STATUS.inprocessing;
+	private FILE_STATUS toefl_file_status= FILE_STATUS.inprocessing;
+	private FILE_STATUS student_transcript= FILE_STATUS.inprocessing;
 
 	private String submission_time;
 	private String last_update;
@@ -125,5 +135,47 @@ public class GTAApplicationInfo {
 	public String getLast_user_update() {
 		return last_user_update;
 	}
+
+	public FILE_STATUS getCv_file_status() {
+		return cv_file_status;
+	}
+
+	public void setCv_file_status(FILE_STATUS cv_file_status) {
+		this.cv_file_status = cv_file_status;
+	}
+
+	public FILE_STATUS getVideo_file_status() {
+		return video_file_status;
+	}
+
+	public void setVideo_file_status(FILE_STATUS video_file_status) {
+		this.video_file_status = video_file_status;
+	}
+
+	public FILE_STATUS getCeltd_file_status() {
+		return celtd_file_status;
+	}
+
+	public void setCeltd_file_status(FILE_STATUS celtd_file_status) {
+		this.celtd_file_status = celtd_file_status;
+	}
+
+	public FILE_STATUS getToefl_file_status() {
+		return toefl_file_status;
+	}
+
+	public void setToefl_file_status(FILE_STATUS toefl_fole_status) {
+		this.toefl_file_status = toefl_fole_status;
+	}
+
+	public FILE_STATUS getStudent_transcript() {
+		return student_transcript;
+	}
+
+	public void setStudent_transcript(FILE_STATUS student_transcript) {
+		this.student_transcript = student_transcript;
+	}
+	
+	
 
 }

@@ -13,8 +13,8 @@ function ApplicationPage() {
     // Show popup before the page is available
     Swal.fire({
       title: 'Welcome',
-      text: 'Please review your application details before submission.\n'+
-      'If you already submited the application before, the new application will replace the previous one.',
+      text: 'Please review your application details before submission.\n' +
+        'If you already submited the application before, the new application will replace the previous one.',
       icon: 'info',
       confirmButtonText: 'Proceed',
       allowOutsideClick: false, // Prevent clicking outside to close
@@ -34,11 +34,9 @@ function ApplicationPage() {
 
   const [isInternationalStudentCB, setIsInternationalStudentCB] = useState(false);
 
-  const [isCYSEStudent, setCYSEStudentCB] = useState(true);
-
   const [celtdCertFile, setCeltdCertFile] = useState(null);
-  const [noCYSEStdTranscriptFile, setnoCYSEStdTranscriptFile] = useState(null);
-  
+  const [transcriptFile, setTranscriptFile] = useState(null);
+
   const [toeflScoreFile, setToeflScoreFile] = useState(null);
 
   const [wasGTACB, setWasGTACB] = useState(false);
@@ -108,23 +106,11 @@ function ApplicationPage() {
     { key: 'CYSE 799', text: 'CYSE 799: Special Topics in Cyber Security Engineering', value: 'CYSE 799' },
   ];
 
-  const gradeOptions = [
-    { key: 'A', text: 'A', value: 'A' },
-    { key: 'B', text: 'B', value: 'B' },
-    { key: 'C', text: 'C', value: 'C' },
-    { key: 'D', text: 'D', value: 'D' },
-    { key: 'F', text: 'F', value: 'F' },
-  ];
-
+ 
 
   const handleIntStdCheckboxChange = (e, { checked }) => {
     setIsInternationalStudentCB(checked);
   };
-
-  const handleCYSECheckboxChange = (e, { checked }) => {
-    setCYSEStudentCB(checked);
-  };
-
 
 
   const handleGTAHistCheckboxChange = (e, { checked }) => {
@@ -164,7 +150,7 @@ function ApplicationPage() {
     setSelectedCourses(updatedCourses);
   };
 
-  
+
 
   const handleSubmitApplication = async () => {
     try {
@@ -190,7 +176,7 @@ function ApplicationPage() {
         form_error_descript += 'CV File was not submitted!\n';
       }
 
-      
+
       if (introGTAVideo) {
         formData.append('introGTAVideo', introGTAVideo);
       } else {
@@ -203,7 +189,7 @@ function ApplicationPage() {
       const applicationData = {
         isInternationalStudent: isInternationalStudentCB,
         wasGTACB: wasGTACB,
-        isCYSEStudent:isCYSEStudent
+        isCYSEStudent: isCYSEStudent
       };
 
       // Only add student history if the student was a previous GTA
@@ -217,29 +203,10 @@ function ApplicationPage() {
         }
       }
 
-      // CHECK IF THE STUDENT FILL ITS GRADE
+      // APPEND THE TRANSCRIPT
+      formData.append('transcriptFile', transcriptFile);
 
-      if (isCYSEStudent){
-        if (!studentHistory || studentHistory.length === 0) {
-          form_error = true
-          form_error_descript += 'Your course grade historify was not provided !\n';
-        } else {
-          applicationData.studentHistory = studentHistory; // This contains previous course history with grades
-  
-        }
-  
-        if (!selectedCourses || selectedCourses.length === 0) {
-          form_error = true
-          form_error_descript += 'You did not select the courses that you want to be a GTA!\n';
-        } else {
-          applicationData.selectedCourses = selectedCourses; // This contains previous course history with grades
-        }  
-      } else {
-        if (noCYSEStdTranscriptFile) {
-          formData.append('noCYSEStdTranscriptFile', noCYSEStdTranscriptFile);
-        } 
-      }
-      
+
       // Include additional files only for international students
       if (isInternationalStudentCB) {
         if (celtdCertFile) {
@@ -370,7 +337,7 @@ function ApplicationPage() {
                   <il> -  Please double-check the video quality before you submit it. Video images should be clear and steady—no blurry, up-side-down videos, etc.<br /> </il>
 
                 </ul>
-               
+
               </div>
             }
             onChange={(e) => handleFileChange(e, setIntroGTAVideo)}
@@ -464,114 +431,15 @@ function ApplicationPage() {
         </Segment>
 
         <Segment>
-          <h4>CYSE Student Records</h4>
-          <Form.Field>
-            <Form.Checkbox
-              label='Are you an CYSE student?'
-              checked={isCYSEStudent}
-              onChange={handleCYSECheckboxChange}
-            />
-          </Form.Field>
-
-          {isCYSEStudent && (
-            <>
-              <Table celled>
-                <Table.Header>
-                  <Table.Row>
-                    <Table.HeaderCell>CYSE ID</Table.HeaderCell>
-                    <Table.HeaderCell>SEMESTER</Table.HeaderCell>
-                    <Table.HeaderCell>YEAR</Table.HeaderCell>
-                    <Table.HeaderCell>GRADE</Table.HeaderCell>
-                  </Table.Row>
-                </Table.Header>
-
-                <Table.Body>
-                  {studentHistory.map((entry, index) => (
-                    <Table.Row key={index}>
-                      <Table.Cell>
-                        <Dropdown
-                          selection
-                          options={courseOptions}
-                          value={entry.cyseId}
-                          onChange={(e, { value }) => handleStudentHistoryChange(index, 'cyseId', value)}
-                          placeholder='Select Course'
-                        />
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Dropdown
-                          selection
-                          options={semesterOptions}
-                          value={entry.semester}
-                          onChange={(e, { value }) => handleStudentHistoryChange(index, 'semester', value)}
-                          placeholder='Select Semester'
-                        />
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Form.Input
-                          value={entry.year}
-                          onChange={(e) => handleStudentHistoryChange(index, 'year', e.target.value)}
-                          placeholder='Enter Year'
-                        />
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Dropdown
-                          selection
-                          options={gradeOptions}
-                          value={entry.grade}
-                          onChange={(e, { value }) => handleStudentHistoryChange(index, 'grade', value)}
-                          placeholder='Select Grade'
-                        />
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table>
-
-              <Button onClick={addStudentHistoryRow} primary>Add Row</Button>
-            </>
-          )}
-
-          {!isCYSEStudent && (
-            <>
-
-              <Form.Input
+          <h4>Student Records</h4>
+          <Form.Input
                 type='file'
-                label='If you are not CYSE student, submit your transcript (PDF format), where you have the ifnormation about the undergraduate and graduate courses that you take using this format: UNIVERSITY, COURSE NAME, YEAR, GRADE (A,B,C,D,F)'
-                onChange={(e) => handleFileChange(e, setnoCYSEStdTranscriptFile)}
+                label='You must submit your course transcript (PDF format). This file must be updated from the school website or official records, including the undergraduate and graduate classes. It must have at least this information: UNIVERSITY, COURSE NAME, YEAR, GRADE (A, B, C, D, or F)'
+                onChange={(e) => handleFileChange(e, setTranscriptFile)}
               />
-            </>
-          )}
-
-
         </Segment>
 
-        {/* New Segment for Selected Courses */}
-        <Segment>
-          <h4>Select the courses that you want to apply</h4>
-          <Table celled>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>CYSE ID</Table.HeaderCell>
-                <Table.HeaderCell>Order</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {selectedCourses.map((course, index) => (
-                <Table.Row key={index}>
-                  <Table.Cell>{course.cyseId}</Table.Cell>
-                  <Table.Cell>
-                    <Form.Input
-                      type='number'
-                      value={course.order}
-                      onChange={(e) => handleOrderChange(index, e.target.value)}
-                      placeholder='Enter Order'
-                    />
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-        </Segment>
+       
 
         <Button onClick={handleSubmitApplication} primary>Submit Application</Button>
       </Form>

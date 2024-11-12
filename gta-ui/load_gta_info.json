@@ -4,48 +4,25 @@
         "isInternationalStudent": false,
         "wasGTA": true,
         "isCYSEStudent": true,
-        "gtaHistoryCourses": [
-            {
-                "cyseId": "CYSE 130",
-                "semester": "SUMMER",
-                "year": "2021"
-            },
-            {
-                "cyseId": "CYSE 304",
-                "semester": "SPRING",
-                "year": "2022"
-            }
-        ],
-        "studentRecords": [
-            {
-                "cyseId": "CYSE 130",
-                "semester": "SUMMER",
-                "year": "2021",
-                "grade": "A"
-            },
-            {
-                "cyseId": "CYSE 304",
-                "semester": "SUMMER",
-                "year": "2022",
-                "grade": "B"
-            }
-        ],
-        "selectedCourses": [
-            {
-                "courseID": "CYSE 130",
-                "order": 1
-            },
-            {
-                "courseID": "CYSE 304",
-                "order": 2
-            }
-        ]
-    },
+    }, 
+
+    "process_info": {
+    
     "ApplicationSubmission": "2025-10-10-20:10:22",
-    "CYSEAdminOfficeDecision": "in-processing",
+    "LastUpdate": "2025-10-10-20:10:22",
+    
+    
+    "CYSEAdminOfficeDecision": "notstarted",
     "CYSEAdminComments": "",
-    "CYSEChairDecision": "in-processing",
+    "CYSEChairDecision": "notstarted",
     "CYSEChairComments": "",
-    "CourseAllocated": "in-processing",
-    "ContractSigned": false
+    "CourseAllocated": "",
+    "ContractSigned": false,
+
+    "CELTD_STATUS": "in-processing",
+    "CV_STATUS": "in-processing",
+    "TRASCRIPT_STATUS": "in-processing",
+    "TOEFL_STATUS": "in-processing",
+    "VIDEO_STATUS": "in-processing"
+    }
 }
