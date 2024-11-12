@@ -16,7 +16,12 @@ public class ApplicationJSON {
 		boolean isInternationalStudent = json.getBoolean("isInternationalStudent");
 		boolean wasGTA = json.getBoolean("wasGTACB");
 		
-		GTAApplication app = new GTAApplication(username,isInternationalStudent, wasGTA);
+		String appperiod = json.getString("appperiod");
+		
+		String appyear = json.getString("appyear");
+		
+		
+		GTAApplication app = new GTAApplication(username,isInternationalStudent, wasGTA, appyear, appperiod);
 		
 		if (wasGTA) {
 			JSONArray gtaCourseHistory = json.getJSONArray("gtaCourseHistory");

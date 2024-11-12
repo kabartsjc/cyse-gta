@@ -1,13 +1,179 @@
+/* Body Styling */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Code Styling */
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+/* Container for the page */
+.page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Take full viewport height */
+  background-color: #f4f4f4; /* Optional background color */
+}
+
+/* Content container for all content */
+.content-container {
+  width: 80%; /* Adjust the width as necessary */
+  max-width: 1200px; /* Optional: Max width for large screens */
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px; /* Optional: rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: shadow for a soft effect */
+}
+
+/* Table Styling */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 0.9em;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Table Header Styling */
+.styled-table thead tr {
+  background-color: #02431c;
+  color: #ffffff;
+  text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 12px 15px;
+}
+
+/* Table Rows Styling */
+.styled-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+  border-bottom: 2px solid #0d6efd;
+}
+
+/* Hover Effect */
+.styled-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Comments Field */
+.comments {
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 4.5em;
+  overflow-y: auto;
+}
+
+/* Icon Alignment */
+.styled-table td svg {
+  font-size: 1.2em;
+  vertical-align: middle;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+/* Close Button */
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #000;
+  cursor: pointer;
+}
+
+/* Button to open the modal */
+.legend-btn {
+  background-color: #02431c;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 20px;
+}
+
+.legend-btn:hover {
+  background-color: #00b30c;
+}
+
+/* Legend Table Styles (same as regular table) */
+.styled-table-legend {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 0.9em;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.styled-table-legend thead tr {
+  background-color: #0dfd35;
+  color: #ffffff;
+  text-align: left;
+}
+
+.styled-table-legend th,
+.styled-table-legend td {
+  padding: 12px 15px;
+}
+
+.styled-table-legend tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.styled-table-legend tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.styled-table-legend tbody tr:last-of-type {
+  border-bottom: 2px solid #0dfd41;
+}
+
+.styled-table-legend tbody tr:hover {
+  background-color: #f1f1f1;
+}
+

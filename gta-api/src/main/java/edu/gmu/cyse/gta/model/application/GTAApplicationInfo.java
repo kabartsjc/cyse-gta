@@ -40,7 +40,7 @@ public class GTAApplicationInfo {
 	private String submission_time;
 	private String last_update;
 	private String last_user_update;
-
+	
 	public GTAApplicationInfo(String username) {
 		this.username = username;
 		submission_time = getTime();
@@ -54,7 +54,8 @@ public class GTAApplicationInfo {
 		LocalDateTime now = LocalDateTime.now();
 		return dtf.format(now);
 	}
-
+	
+	
 	public String getUsername() {
 		return username;
 	}

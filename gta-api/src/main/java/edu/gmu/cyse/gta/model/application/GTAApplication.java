@@ -16,18 +16,24 @@ public class GTAApplication {
 
 	private boolean isInternationalStudent = false;
 	private boolean wasGTA = false;
-	
+
+	private String period;
+	private String year;
+
 	private List<GTAHistoryCourse> gtaHistoryCourses;
 
 	public GTAApplication() {
 		this.gtaHistoryCourses = new ArrayList<GTAHistoryCourse>();
 	}
 
-	public GTAApplication(String username, boolean isInternationalStudent, boolean wasGTA) {
+	public GTAApplication(String username, boolean isInternationalStudent, boolean wasGTA, String year, String period) {
 		super();
 		this.username = username;
 		this.isInternationalStudent = isInternationalStudent;
 		this.wasGTA = wasGTA;
+
+		this.year = year;
+		this.period = period;
 
 		this.gtaHistoryCourses = new ArrayList<GTAHistoryCourse>();
 	}
@@ -36,7 +42,6 @@ public class GTAApplication {
 		this.gtaHistoryCourses = gtaCourseHistoryList;
 	}
 
-
 	public boolean isInternationalStudent() {
 		return isInternationalStudent;
 	}
@@ -44,7 +49,7 @@ public class GTAApplication {
 	public boolean isWasGTA() {
 		return wasGTA;
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -65,5 +70,12 @@ public class GTAApplication {
 		this.isInternationalStudent = internationalStudent;
 	}
 
+	public String getPeriod() {
+		return period;
+	}
+
+	public String getYear() {
+		return year;
+	}
 
 }

@@ -7,7 +7,6 @@ import { Container, Form, Button, Segment, Table, Dropdown } from 'semantic-ui-r
 import Swal from 'sweetalert2';
 
 
-
 function ApplicationPage() {
   useEffect(() => {
     // Show popup before the page is available
@@ -103,7 +102,7 @@ function ApplicationPage() {
     { key: 'CYSE 799', text: 'CYSE 799: Special Topics in Cyber Security Engineering', value: 'CYSE 799' },
   ];
 
- 
+
 
   const handleIntStdCheckboxChange = (e, { checked }) => {
     setIsInternationalStudentCB(checked);
@@ -124,26 +123,51 @@ function ApplicationPage() {
     setGtaCourseHistory(updatedHistory);
   };
 
-  
+
   const addGtaHistoryRow = () => {
     setGtaCourseHistory([...gtaCourseHistory, { cyseId: '', semester: '', year: '' }]);
   };
 
- 
+
   //  const application = { username,cvFile, introGTAVideo,  isInternationalStudent, isInternationalStudent,wasGTA,studentHistoryCB,}
 
 
-  
+  const [appyear, setYear] = useState('');
+  const [appperiod, setPeriod] = useState('');
+
+
+  // Handle the year input change
+  const handleYearChange = (e) => {
+    setYear(e.target.value);
+  };
+
+  const handlePeriodChange = (e, { value }) => {
+    setPeriod(value);
+  };
+
+
+  // Period dropdown options
+  const periodOptions = [
+    { key: 'fall', text: 'FALL', value: 'FALL' },
+    { key: 'spring', text: 'SPRING', value: 'SPRING' },
+    { key: 'summer', text: 'SUMMER', value: 'SUMMER' },
+  ];
 
 
   const handleSubmitApplication = async () => {
-    try {
-      // Create a FormData object to hold the files
-      const formData = new FormData();
 
+    
+    try {
+      
+      const formData = new FormData();
+      
+  
       let form_error = false
 
       let form_error_descript = ""
+
+
+
 
       const user = Auth.getUser();
       console.log("username:", user.data.preferred_username); // Debug line
@@ -173,6 +197,9 @@ function ApplicationPage() {
       const applicationData = {
         isInternationalStudent: isInternationalStudentCB,
         wasGTACB: wasGTACB,
+        appyear:appyear,
+        appperiod:appperiod
+
       };
 
       // Only add student history if the student was a previous GTA
@@ -288,8 +315,34 @@ function ApplicationPage() {
   }
 
   return (
-    <Container>
+    <Container className='gmu-theme'>
       <Form>
+
+        <Segment>
+          <Form.Field>
+            <label>Year</label>
+            <Form.Input
+              type="number"
+              value={appyear}
+              onChange={handleYearChange}
+              placeholder="Enter the year"
+            />
+          </Form.Field>
+
+            {/* Period Dropdown */}
+      <Form.Field>
+        <label>Period</label>
+        <Dropdown
+          selection
+          options={periodOptions}
+          value={appperiod}
+          onChange={handlePeriodChange}
+          placeholder="Select Period"
+        />
+      </Form.Field>
+
+
+        </Segment>
 
         {/* Segment for File Uploads */}
         <Segment>
@@ -409,15 +462,17 @@ function ApplicationPage() {
         <Segment>
           <h4>Student Records</h4>
           <Form.Input
-                type='file'
-                label='You must submit your course transcript (PDF format). This file must be updated from the school website or official records, including the undergraduate and graduate classes. It must have at least this information: UNIVERSITY, COURSE NAME, YEAR, GRADE (A, B, C, D, or F)'
-                onChange={(e) => handleFileChange(e, setTranscriptFile)}
-              />
+            type='file'
+            label='You must submit your course transcript (PDF format). This file must be updated from the school website or official records, including the undergraduate and graduate classes. It must have at least this information: UNIVERSITY, COURSE NAME, YEAR, GRADE (A, B, C, D, or F)'
+            onChange={(e) => handleFileChange(e, setTranscriptFile)}
+          />
         </Segment>
 
-       
 
-        <Button onClick={handleSubmitApplication} primary>Submit Application</Button>
+
+        <Button onClick={handleSubmitApplication} primary>
+          Submit Application
+        </Button>
       </Form>
     </Container>
   );

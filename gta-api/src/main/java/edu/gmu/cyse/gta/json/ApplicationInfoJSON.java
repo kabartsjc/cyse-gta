@@ -1,9 +1,13 @@
 package edu.gmu.cyse.gta.json;
 
+import java.util.List;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import edu.gmu.cyse.gta.model.application.GTAApplication;
 import edu.gmu.cyse.gta.model.application.GTAApplicationInfo;
+import edu.gmu.cyse.gta.model.application.GTAHistoryCourse;
 
 public class ApplicationInfoJSON {
 	
@@ -14,6 +18,25 @@ public class ApplicationInfoJSON {
 		appl_info.put("username", app.getUsername());
 		appl_info.put("isInternationalStudent", app.isInternationalStudent());
 		appl_info.put("wasGTA", app.isWasGTA());
+		
+		JSONArray gta_history = new JSONArray();
+		
+		List<GTAHistoryCourse>gtaHistoryCourses = app.getGtaHistoryCourses();
+
+        // Loop through the list and create a JSONObject for each entry
+        for (GTAHistoryCourse course : gtaHistoryCourses) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cyseId", course.getCyseId());
+            jsonObject.put("semester", course.getSemester());
+            jsonObject.put("year", course.getYear());
+
+            // Add the JSON object to the JSONArray
+            gta_history.put(jsonObject);
+        }
+        
+        appl_info.put("gtaHistoryCourses", gta_history);
+        
+		
 		result.put("application_info", appl_info);
 		
 		JSONObject process_info = new JSONObject();
@@ -29,13 +52,16 @@ public class ApplicationInfoJSON {
 		process_info.put("ContractSigned", info.isContractSigned());
 		
 		process_info.put("LastUpdate", info.getLast_update());
-		process_info.put("ContractSigned", info.isContractSigned());
 		
-		process_info.put("CELTD_STATUS", info.getCeltd_file_status());
-		process_info.put("CV_STATUS", info.getCv_file_status());
-		process_info.put("TRASCRIPT_STATUS", info.getStudent_transcript());
-		process_info.put("TOEFL_STATUS", info.getToefl_file_status());
-		process_info.put("VIDEO_STATUS", info.getVideo_file_status());
+		process_info.put("CELTSTATUS", info.getCeltd_file_status());
+		process_info.put("CVSTATUS", info.getCv_file_status());
+		process_info.put("TRASCRIPTSTATUS", info.getStudent_transcript());
+		process_info.put("TOEFLSTATUS", info.getToefl_file_status());
+		process_info.put("VIDEOSTATUS", info.getVideo_file_status());
+		
+		
+		        
+        
 		
 		result.put("process_info", process_info);
 		
