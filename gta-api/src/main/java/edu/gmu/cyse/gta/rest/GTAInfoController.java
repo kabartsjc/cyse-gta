@@ -23,7 +23,7 @@ public class GTAInfoController {
 	GTAApplicationInfoServiceImpl gtaAppInfoService;
 
 
-	  // Use @RequestParam to receive query parameters
+	// Use @RequestParam to receive query parameters
     @GetMapping(value = "/gtainfo", produces = "application/json")
     public String getGTAInfo(@RequestParam String gta_param_name) {
         String answer=null;

@@ -20,17 +20,17 @@ function Navbar() {
 
   const adminPageStyle = () => {
     const user = getUser()
-    return user && user.data.rol[0] === 'ADMIN' ? { "display": "block" } : { "display": "none" }
+    return user && user.data.authorities === 'ADMIN' ? { "display": "block" } : { "display": "none" }
   }
 
   const userPageStyle = () => {
     const user = getUser()
-    return user && user.data.rol[0] === 'USER' ? { "display": "block" } : { "display": "none" }
+    return user && user.data.authorities === 'USER' ? { "display": "block" } : { "display": "none" }
   }
 
   const getUserName = () => {
     const user = getUser()
-    return user ? user.data.name : ''
+    return user ? user.data.email : ''
   }
 
   return (

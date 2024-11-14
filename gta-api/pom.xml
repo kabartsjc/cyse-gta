@@ -19,7 +19,7 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<jjwt.version>0.12.6</jjwt.version>
+		<jjwt.version>0.11.5</jjwt.version>
 		<springdoc-openapi.version>2.6.0</springdoc-openapi.version>
 		<start-class>edu.gmu.cyse.gta.GTAApiApplication</start-class>
 
@@ -54,22 +54,21 @@
 		</dependency>
 
 
-		<!-- JSON Web Token -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
-			<version>${jjwt.version}</version>
+			<version>0.12.6</version>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
-			<version>${jjwt.version}</version>
+			<version>0.12.6</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId>
-			<version>${jjwt.version}</version>
+			<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if using Gson -->
+			<version>0.12.6</version>
 			<scope>runtime</scope>
 		</dependency>
 

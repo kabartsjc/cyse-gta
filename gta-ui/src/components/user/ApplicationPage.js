@@ -11,27 +11,17 @@ import Swal from 'sweetalert2';
 
 
 function ApplicationPage() {
-  useEffect(() => {
-    // Show popup before the page is available
-    Swal.fire({
-      title: 'Welcome',
-      text: 'Please review your application details before submission.\n' +
-        'If you already submited the application before, the new application will replace the previous one.',
-      icon: 'info',
-      confirmButtonText: 'Proceed',
-      allowOutsideClick: false, // Prevent clicking outside to close
-      allowEscapeKey: false,   // Prevent using the escape key to close
-    }).then(() => {
-      console.log("Popup closed, user is viewing the page now.");
-    });
-  }, []);
+
+  const [wasGTACB, setWasGTACB] = useState(false);
+  const [gtaCourseHistory, setGtaCourseHistory] = useState([{ cyseId: '', semester: '', year: '' }]);
+
 
   const navigate = useNavigate();
 
 
   const Auth = useAuth();
   const user = Auth.getUser();
-  const isUser = user.data.rol[0] === 'USER';
+  const isUser = user.data.authorities === 'USER';
 
   const [cvFile, setCVFile] = useState(null);
 
@@ -41,9 +31,6 @@ function ApplicationPage() {
   const [transcriptFile, setTranscriptFile] = useState(null);
 
   const [toeflScoreFile, setToeflScoreFile] = useState(null);
-
-  const [wasGTACB, setWasGTACB] = useState(false);
-  const [gtaCourseHistory, setGtaCourseHistory] = useState([{ cyseId: '', semester: '', year: '' }]);
 
   const semesterOptions = [
     { key: 'summer', text: 'SUMMER', value: 'SUMMER' },
@@ -121,6 +108,8 @@ function ApplicationPage() {
     setFileFunction(e.target.files[0]);
   };
 
+  
+
   const handleGtaHistoryChange = (index, field, value) => {
     const updatedHistory = [...gtaCourseHistory];
     updatedHistory[index][field] = value;
@@ -167,6 +156,22 @@ function ApplicationPage() {
   ];
 
 
+  useEffect(() => {
+    // Show popup before the page is available
+    Swal.fire({
+      title: 'Welcome',
+      text: 'Please review your application details before submission.\n' +
+        'If you already submited the application before, the new application will replace the previous one.',
+      icon: 'info',
+      confirmButtonText: 'Proceed',
+      allowOutsideClick: false, // Prevent clicking outside to close
+      allowEscapeKey: false,   // Prevent using the escape key to close
+    }).then(() => {
+      console.log("Popup closed, user is viewing the page now.");
+    });
+  }, []);
+
+
   const handleSubmitApplication = async () => {
 
 
@@ -184,10 +189,10 @@ function ApplicationPage() {
 
 
       const user = Auth.getUser();
-      console.log("username:", user.data.preferred_username); // Debug line
+      console.log("username:", user.data.email); // Debug line
 
 
-      formData.append('username', user.data.preferred_username)
+      formData.append('username', user.data.email)
 
 
 
@@ -249,6 +254,8 @@ function ApplicationPage() {
             Authorization: `Bearer ${token}`,
           },
         };
+
+        
 
 
         let response = await gtaApi.submitApplication(user, config, formData);

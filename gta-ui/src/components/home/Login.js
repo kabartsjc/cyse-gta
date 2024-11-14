@@ -43,6 +43,7 @@ function Login() {
       const { accessToken } = response.data
       const data = parseJwt(accessToken)
       const authenticatedUser = { data, accessToken }
+      
 
       Auth.userLogin(authenticatedUser)
 
@@ -59,9 +60,11 @@ function Login() {
 
   if (isLoggedIn) {
 
-    if (user && user.data && user.data.rol && user.data.rol[0] === 'ADMIN') {
+    console.log(user)
+
+    if (user && user.data && user.data.authorities && user.data.authorities === 'ADMIN') {
       return <Navigate to="/admin" />;
-    } else if (user && user.data && user.data.rol && user.data.rol[0] === 'USER') {
+    } else if (user && user.data && user.data.authorities && user.data.authorities === 'USER') {
       return <Navigate to="/home" />;
     }
     //return <Navigate to={'/home'} />

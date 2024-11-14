@@ -13,6 +13,8 @@ const Home = () => {
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [gtaHistoryCourses, setGtaHistoryCourses] = useState([]);
+
 
   const hasData = (data) => data && data.length > 0;
 
@@ -54,12 +56,17 @@ const Home = () => {
         },
       };
 
+      console.log("verificar",user)
+
       gtaApi
         .loadGTAApplicationInfo(user, config)
         .then(response => {
+          const historyCourses = response.data.application_info?.gtaHistoryCourses || [];
+          setGtaHistoryCourses(historyCourses);
           setData(response.data);
           setLoading(false);
           setDataLoaded(true); // Set the flag to prevent future calls
+
         })
         .catch(error => {
           console.error("Error fetching data:", error);
@@ -68,18 +75,89 @@ const Home = () => {
     }
   }, [user, dataLoaded]);
 
+  const handleAddCourse = () => {
+    setGtaHistoryCourses([...gtaHistoryCourses, { cyseId: "", semester: "", year: "" }]);
+  };
+
+  // Delete a course
+  const handleDeleteCourse = (index) => {
+    const updatedCourses = gtaHistoryCourses.filter((_, idx) => idx !== index);
+    setGtaHistoryCourses(updatedCourses);
+  };
+
+  // Update a course
+  const handleCourseChange = (index, field, value) => {
+    const updatedCourses = gtaHistoryCourses.map((course, idx) =>
+      idx === index ? { ...course, [field]: value } : course
+    );
+    setGtaHistoryCourses(updatedCourses);
+  };
+
+
+  const handleSaveChanges = async () =>  {
+
+    const token = localStorage.getItem("authToken");
+    console.log("Token:", token); // Debug line
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        console.log("passei aqui33333"); // Debug line
+
+
+        let response = await gtaApi.updateGTAHistoryCourses(user, gtaHistoryCourses, config);
+
+        console.log("passei aqui 525252", response)
+
+        if (response?.status === 401) {
+          console.log('passei aqui')
+          await gtaApi.renewToken(); // Call your token renewal function here
+          config.headers["Authorization"] = `Bearer ${localStorage.getItem("authToken")}`;
+
+          response = await  gtaApi.updateGTAHistoryCourses(user, gtaHistoryCourses, config);
+        }
+      
+  };
+
 
 
   // Render GTA history courses
-  const renderGTAHistoryCourses = (gtaHistoryCourses) => {
+  const renderGTAHistoryCourses = () => {
     if (!hasData(gtaHistoryCourses)) {
-      return <tr><td colSpan="3">No GTA history courses</td></tr>;
+      return <tr><td colSpan="4">No GTA history courses</td></tr>;
     }
     return gtaHistoryCourses.map((course, index) => (
       <tr key={index}>
-        <td>{course.cyseId}</td>
-        <td>{course.semester}</td>
-        <td>{course.year}</td>
+        <td>
+          <input
+            type="text"
+            value={course.cyseId}
+            onChange={(e) => handleCourseChange(index, 'cyseId', e.target.value)}
+            placeholder="CYSE ID"
+          />
+        </td>
+        <td>
+          <input
+            type="text"
+            value={course.semester}
+            onChange={(e) => handleCourseChange(index, 'semester', e.target.value)}
+            placeholder="Semester"
+          />
+        </td>
+        <td>
+          <input
+            type="text"
+            value={course.year}
+            onChange={(e) => handleCourseChange(index, 'year', e.target.value)}
+            placeholder="Year"
+          />
+        </td>
+        <td>
+          <button onClick={() => handleDeleteCourse(index)}>Delete</button>
+        </td>
       </tr>
     ));
   };
@@ -92,127 +170,127 @@ const Home = () => {
     return <p>No application data available.</p>;
   }
 
-  
-  console.log(data.process_info.CELTDSTATUS)
-
 
   // If user data is available, display the name, else display a default message
   return (
     <div className="page-container">
       <div className="content-container">
         {user && user.data ? (
-      <h2>Welcome, {user.data.name}!</h2>  // Display the user's name
-    ) : (
-      <h2>Welcome, Guest!</h2>  // Fallback if no user is logged in
-    )}
+          <h2>Welcome, {user.data.email}!</h2>  // Display the user's name
+        ) : (
+          <h2>Welcome, Guest!</h2>  // Fallback if no user is logged in
+        )}
 
-    <h4>Application Information</h4>
-    <table className="styled-table">
-      <thead>
-        <tr>
-          <th>Username</th>
-          <th>International Student</th>
-          <th>Student was GTA</th>
-          <th>Application Submission</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{data.application_info.username || 'N/A'}</td>
-          <td>{data.application_info.isInternationalStudent ? "Yes" : "No"}</td>
-          <td>{data.application_info.wasGTA ? "Yes" : "No"}</td>
-          <td>{data.process_info.ApplicationSubmission || 'N/A'}</td>
-        </tr>
-      </tbody>
-    </table>
+        <h4>Application Information</h4>
+        <table className="styled-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>International Student</th>
+              <th>Student was GTA</th>
+              <th>Application Submission</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{data.application_info.username || 'N/A'}</td>
+              <td>{data.application_info.isInternationalStudent ? "Yes" : "No"}</td>
+              <td>{data.application_info.wasGTA ? "Yes" : "No"}</td>
+              <td>{data.process_info.ApplicationSubmission || 'N/A'}</td>
+            </tr>
+          </tbody>
+        </table>
 
-    <h4>Process Information</h4>
-    <table className="styled-table">
-      <tbody>
-        {/* Line 1 */}
-        <tr>
-          <th style={{ width: '20%' }}>CYSE Admin Office Decision</th>
-          <td>{getStatusIcon(data.process_info.CYSEAdminOfficeDecision || 'nosubmited')}</td>
-          <th style={{ width: '20%' }}>CYSE Admin Comments</th>
-          <td 
-            style={{ 
-              width: '30%', 
-              whiteSpace: 'pre-wrap', 
-              wordBreak: 'break-word', 
-              maxHeight: '4.5em',  // Limit height for 3 lines of text
-              overflow: 'hidden',
-              textOverflow: 'ellipsis'
-            }}
-            title={data.process_info.CYSEAdminComments || 'N/A'} // Tooltip for full text on hover
-          >
-            {data.process_info.CYSEAdminComments || 'N/A'}
-          </td>
-        </tr>
+        <h4>Process Information</h4>
+        <table className="styled-table">
+          <tbody>
+            {/* Line 1 */}
+            <tr>
+              <th style={{ width: '20%' }}>CYSE Admin Office Decision</th>
+              <td>{getStatusIcon(data.process_info.CYSEAdminOfficeDecision || 'nosubmited')}</td>
+              <th style={{ width: '20%' }}>CYSE Admin Comments</th>
+              <td
+                style={{
+                  width: '30%',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  maxHeight: '4.5em',  // Limit height for 3 lines of text
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+                title={data.process_info.CYSEAdminComments || 'N/A'} // Tooltip for full text on hover
+              >
+                {data.process_info.CYSEAdminComments || 'N/A'}
+              </td>
+            </tr>
 
-        {/* Line 2 */}
-        <tr>
-          <th>CYSE Chair Decision</th>
-          <td>{getStatusIcon(data.process_info.CYSEChairDecision || 'nosubmited')}</td>
-          <th>CYSE Chair Comments</th>
-          <td>{data.process_info.CYSEChairComments || 'N/A'}</td>
-        </tr>
+            {/* Line 2 */}
+            <tr>
+              <th>CYSE Chair Decision</th>
+              <td>{getStatusIcon(data.process_info.CYSEChairDecision || 'nosubmited')}</td>
+              <th>CYSE Chair Comments</th>
+              <td>{data.process_info.CYSEChairComments || 'N/A'}</td>
+            </tr>
 
-        {/* Line 3 */}
-        <tr>
-          <th>Course Allocated</th>
-          <td>{data.process_info.CourseAllocated || 'N/A'}</td>
-          <th>Contract Signed</th>
-          <td>{data.process_info.ContractSigned ? "Yes" : "No"}</td>
-        </tr>
+            {/* Line 3 */}
+            <tr>
+              <th>Course Allocated</th>
+              <td>{data.process_info.CourseAllocated || 'N/A'}</td>
+              <th>Contract Signed</th>
+              <td>{data.process_info.ContractSigned ? "Yes" : "No"}</td>
+            </tr>
 
-        {/* Line 4 */}
-        <tr>
-          <th>CELTD Status</th>
-          <td>{getStatusIcon(data.process_info.CELTDSTATUS || 'notstarted')}</td>
-          <th>CV Status</th>
-          <td>{getStatusIcon(data.process_info.CVSTATUS || 'notstarted')}</td>
-        </tr>
+            {/* Line 4 */}
+            <tr>
+              <th>CELTD Status</th>
+              <td>{getStatusIcon(data.process_info.CELTDSTATUS || 'notstarted')}</td>
+              <th>CV Status</th>
+              <td>{getStatusIcon(data.process_info.CVSTATUS || 'notstarted')}</td>
+            </tr>
 
-        <tr>
-          <th>Transcript Status</th>
-          <td>{getStatusIcon(data.process_info.TRASCRIPTSTATUS || 'notstarted')}</td>
-          <th>TOEFL Status</th>
-          <td>{getStatusIcon(data.process_info.TOEFLSTATUS || 'notstarted')}</td>
-        </tr>
+            <tr>
+              <th>Transcript Status</th>
+              <td>{getStatusIcon(data.process_info.TRASCRIPTSTATUS || 'notstarted')}</td>
+              <th>TOEFL Status</th>
+              <td>{getStatusIcon(data.process_info.TOEFLSTATUS || 'notstarted')}</td>
+            </tr>
 
-        <tr>
-          <th>Video Status</th>
-          <td>{getStatusIcon(data.process_info.VIDEOSTATUS || 'notstarted')}</td>
-        </tr>
+            <tr>
+              <th>Video Status</th>
+              <td>{getStatusIcon(data.process_info.VIDEOSTATUS || 'notstarted')}</td>
+            </tr>
 
-        {/* Line 5 */}
-        <tr>
-          <th>Last Update</th>
-          <td colSpan="5">{data.process_info.LastUpdate || 'N/A'}</td>
-        </tr>
-      </tbody>
-    </table>
+            {/* Line 5 */}
+            <tr>
+              <th>Last Update</th>
+              <td colSpan="5">{data.process_info.LastUpdate || 'N/A'}</td>
+            </tr>
+          </tbody>
+        </table>
 
-    <h4>GTA History Courses</h4>
-    <table className="styled-table">
-      <thead>
-        <tr>
-          <th>CYSE ID</th>
-          <th>Semester</th>
-          <th>Year</th>
-        </tr>
-      </thead>
-      <tbody>
-        {renderGTAHistoryCourses(data.application_info.gtaHistoryCourses)}
-      </tbody>
-    </table>
+        <h4>GTA History Courses</h4>
+        <button onClick={handleAddCourse}>Add New Course</button>
+        <table className="styled-table">
+          <thead>
+            <tr>
+              <th>CYSE ID</th>
+              <th>Semester</th>
+              <th>Year</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {renderGTAHistoryCourses()}
+          </tbody>
+        </table>
 
-      {/* Status Legend Modal */}
-      <StatusLegendModal getStatusIcon={getStatusIcon} />
+        <button onClick={handleSaveChanges}>Save Changes</button>
+        {/* Status Legend Modal */}
+        <StatusLegendModal getStatusIcon={getStatusIcon} />
 
-  </div>
-  </div>
-  
+      </div>
+    </div>
+
   );
 };
 

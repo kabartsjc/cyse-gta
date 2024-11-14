@@ -35,5 +35,32 @@ public class GTAHistoryCourse {
 	public String getYear() {
 		return year;
 	}
+	
+	
+	
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setCyseId(String cyseId) {
+		this.cyseId = cyseId;
+	}
+
+	public void setSemester(String semester) {
+		this.semester = semester;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
+	}
+
+	@Override
+    public String toString() {
+        return "CourseHistoryRequest{" +
+                "year='" + year + '\'' +
+                ", semester='" + semester + '\'' +
+                ", cyseId='" + cyseId + '\'' +
+                '}';
+    }
 
 }

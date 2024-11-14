@@ -46,7 +46,7 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestParam String refreshToken) {
         try {
             // Generate a new access token using the refresh token
-            String newAccessToken = tokenProvider.generateTokenFromRefreshToken(refreshToken);
+           String newAccessToken = tokenProvider.generateTokenFromRefreshToken(refreshToken);
 
             // Create a response map
             Map<String, String> response = new HashMap<>();
@@ -78,8 +78,9 @@ public class AuthController {
     }
 
     private String authenticateAndGetToken(String username, String password) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        return tokenProvider.generate(authentication);
+        Authentication authentication = authenticationManager.authenticate(
+        		new UsernamePasswordAuthenticationToken(username, password));
+        return tokenProvider.generateToken(authentication);
     }
 
     private User mapSignUpRequestToUser(SignUpRequest signUpRequest) {

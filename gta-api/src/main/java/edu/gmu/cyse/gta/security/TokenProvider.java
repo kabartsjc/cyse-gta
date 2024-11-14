@@ -1,138 +1,126 @@
 package edu.gmu.cyse.gta.security;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.crypto.SecretKey;
 
 @Slf4j
 @Component
 public class TokenProvider {
 
-    @Value("${app.jwt.secret}")
-    private String jwtSecret;
-
-    @Value("${app.jwt.expiration.minutes}")
-    private Long jwtExpirationMinutes;
+    //@Value("${app.jwt.secret}")
     
-    @Value("${app.jwt.expiration.ms}")
-    private long jwtExpirationMs;
+	@Autowired
+    private JWTConfig jwtConfig;
+	//private String jwtSecret;
+
+    //@Value("${app.jwt.expiration.ms}")
+    //private long jwtExpirationMs;
+
+    //@Value("${app.jwt.refreshExpiration.ms}")
+    //private long refreshExpirationMs;
+
+    private static final String TOKEN_TYPE = "JWT";
+    private static final String TOKEN_ISSUER = "order-api";
+    private static final String TOKEN_AUDIENCE = "order-app";
     
-    @Value("${app.jwt.refreshExpiration.ms}")
-    private long refreshExpirationMs;
+//    static SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
+    public static SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
-    public String generate(Authentication authentication) {
-        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+    /**
+     * Generates a JWT token based on the authenticated user's details.
+     * 
+     * @param authentication the authentication object containing user details.
+     * @return the generated JWT token.
+     */
+    public String generateToken(Authentication authentication) {
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
-        List<String> roles = user.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+        String roles = populateAuthorities(authorities);
 
-        byte[] signingKey = jwtSecret.getBytes();
-
-        return Jwts.builder()
-                .header().add("typ", TOKEN_TYPE)
-                .and()
-                .signWith(Keys.hmacShaKeyFor(signingKey), Jwts.SIG.HS512)
-                .expiration(Date.from(ZonedDateTime.now().plusMinutes(jwtExpirationMs).toInstant()))
-//                .expiration(Date.from(ZonedDateTime.now().plusMinutes(jwtExpirationMinutes).toInstant()))
-                .issuedAt(Date.from(ZonedDateTime.now().toInstant()))
-                .id(UUID.randomUUID().toString())
-                .issuer(TOKEN_ISSUER)
-                .audience().add(TOKEN_AUDIENCE)
-                .and()
-                .subject(user.getUsername())
-                .claim("rol", roles)
-                .claim("name", user.getName())
-                .claim("preferred_username", user.getUsername())
-                .claim("email", user.getEmail())
+        @SuppressWarnings("deprecation")
+        String jwt = Jwts.builder()
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().getTime()+86400000))
+                .claim("email", authentication.getName())
+                .claim( "authorities",roles)
+                .signWith(key)
                 .compact();
+        System.out.println("Token for parsing in JwtProvider: " + jwt);
+        return jwt;    	
     }
-
-    public Optional<Jws<Claims>> validateTokenAndGetJws(String token) {
+    
+    private static String populateAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        Set<String> auths = new HashSet<>();
+        for(GrantedAuthority authority: authorities) {
+            auths.add(authority.getAuthority());
+        }
+        return String.join(",",auths);
+    }
+    
+    public static String generateTokenFromRefreshToken(String jwt) {
         try {
-            byte[] signingKey = jwtSecret.getBytes();
-
-            Jws<Claims> jws = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(signingKey))
+            // Step 1: Parse the existing JWT token using the new JwtParserBuilder
+        	Claims claims = Jwts.parser()
+                    .setSigningKey(key)
                     .build()
-                    .parseSignedClaims(token);
-
-            return Optional.of(jws);
-        } catch (ExpiredJwtException exception) {
-            log.error("Request to parse expired JWT : {} failed : {}", token, exception.getMessage());
-        } catch (UnsupportedJwtException exception) {
-            log.error("Request to parse unsupported JWT : {} failed : {}", token, exception.getMessage());
-        } catch (MalformedJwtException exception) {
-            log.error("Request to parse invalid JWT : {} failed : {}", token, exception.getMessage());
-        } catch (SignatureException exception) {
-            log.error("Request to parse JWT with invalid signature : {} failed : {}", token, exception.getMessage());
-        } catch (IllegalArgumentException exception) {
-            log.error("Request to parse empty or null JWT : {} failed : {}", token, exception.getMessage());
-        }
-        return Optional.empty();
-    }
-    
-    
-    public String generateTokenFromRefreshToken(String refreshToken) {
-        Claims claims = getClaimsFromToken(refreshToken);
-
-        // Validate if the refresh token is expired
-        if (claims == null || isTokenExpired(claims)) {
-            throw new RuntimeException("Refresh token is expired or invalid");
-        }
-
-        // Extract the user information from the refresh token claims
-        String username = claims.getSubject();
-
-        // Generate a new access token
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
-
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                .compact();
-    }
-    
-    private Claims getClaimsFromToken(String token) {
-        try {
-            return ((JwtParser) Jwts.parser()
-                    .setSigningKey(jwtSecret))
-                    .parseClaimsJws(token)
+                    .parseClaimsJws(jwt)
                     .getBody();
+            // Step 2: Extract current claims
+            String email = claims.get("email", String.class);
+            String authorities = claims.get("authorities", String.class);
+
+            // Step 3: Generate a new token with the same claims but a new expiration date
+            String renewedToken = Jwts.builder()
+                    .setIssuedAt(new Date()) // New issue date
+                    .setExpiration(new Date(new Date().getTime() + 86400000)) // New expiration date
+                    .claim("email", email)
+                    .claim("authorities", authorities)
+                    .signWith(key)
+                    .compact();
+
+            return renewedToken;
         } catch (Exception e) {
+            System.err.println("Error renewing token: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    @SuppressWarnings("deprecation")
+    public static String getEmailFromJwtToken(String jwt) {
+        jwt = jwt.substring(7); // Assuming "Bearer " is removed from the token
+        try {
+            //Claims claims=Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
+            Claims claims = Jwts.parser().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
+            String email = String.valueOf(claims.get("email"));
+            System.out.println("Email extracted from JWT: " + claims);
+            return email;
+        } catch (Exception e) {
+            System.err.println("Error extracting email from JWT: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
 
-    // Helper method to check if a token is expired
+    /**
+     * Checks if a token is expired.
+     * 
+     * @param claims the claims of the token.
+     * @return true if the token is expired, false otherwise.
+     */
     private boolean isTokenExpired(Claims claims) {
         return claims.getExpiration().before(new Date());
     }
-
-    public static final String TOKEN_TYPE = "JWT";
-    public static final String TOKEN_ISSUER = "order-api";
-    public static final String TOKEN_AUDIENCE = "order-app";
 }
