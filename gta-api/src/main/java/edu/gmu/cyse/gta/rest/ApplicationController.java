@@ -182,15 +182,13 @@ public class ApplicationController {
 	public ResponseEntity<?> updateCourseHistory(@RequestParam String gta_param_name,
 			HttpEntity<List<GTAHistoryCourse>> httpEntity) {
 
-		List<GTAHistoryCourse> applicationDataJson = httpEntity.getBody();
-		// Your logic to update the courses based on gta_param_name (username)
+		List<GTAHistoryCourse> gtacourseList = httpEntity.getBody();
+		
 		GTAApplication app = gtaApplicationService.getGTAApplicationByUsername(gta_param_name).orElse(null);
-		List<GTAHistoryCourse> courseHList = null;
 		GTAApplication app_n = null;
 
 		if (app != null) {
-			courseHList = null;
-			app.setGTAHistoryCourses(courseHList);
+			app.setGTAHistoryCourses(gtacourseList);
 			app_n = this.gtaApplicationService.saveGTAApplication(app);
 		}
 

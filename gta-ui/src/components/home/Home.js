@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { gtaApi } from '../misc/GtaApi'
 import { FaSpinner, FaCheckCircle, FaTimesCircle, FaExclamationCircle, FaHourglassHalf, FaBan, FaSearch, FaExclamationTriangle } from "react-icons/fa";
 import StatusLegendModal from './StatusLegendModal'; // Import the modal component
+import {  Form, Button, Container, Table, Dropdown, Segment } from 'semantic-ui-react';
 
+import Swal from 'sweetalert2';
 
 
 const Home = () => {
@@ -18,6 +20,67 @@ const Home = () => {
 
   const hasData = (data) => data && data.length > 0;
 
+  const courseOptions = [
+    { key: 'CYSE 101', text: 'CYSE 101: Introduction to Cyber Security Engineering', value: 'CYSE 101' },
+    { key: 'CYSE 130', text: 'CYSE 130: Introduction to Computing for Digital Systems Engineering', value: 'CYSE 130' },
+    { key: 'CYSE 211', text: 'CYSE 211: Operating Systems and Lab', value: 'CYSE 211' },
+    { key: 'CYSE 230', text: 'CYSE 230: Computer Networking', value: 'CYSE 230' },
+    { key: 'CYSE 304', text: 'CYSE 304: Cyber Security in Logic Design and Digital Systems', value: 'CYSE 304' },
+    { key: 'CYSE 395', text: 'CYSE 395: Cyber Security Engineering Internship', value: 'CYSE 395' },
+    { key: 'CYSE 411', text: 'CYSE 411: Secure Software Engineering', value: 'CYSE 411' },
+    { key: 'CYSE 421', text: 'CYSE 421: Industrial Control Systems Security', value: 'CYSE 421' },
+    { key: 'CYSE 424', text: 'CYSE 424: Embedded and Real Time Systems', value: 'CYSE 424' },
+    { key: 'CYSE 425', text: 'CYSE 425: Secure RF Communications', value: 'CYSE 425' },
+    { key: 'CYSE 430', text: 'CYSE 430: Critical Infrastructure Protection', value: 'CYSE 430' },
+    { key: 'CYSE 445', text: 'CYSE 445: System Security and Resilience', value: 'CYSE 445' },
+    { key: 'CYSE 450', text: 'CYSE 450: Cyber Vulnerability Lab', value: 'CYSE 450' },
+    { key: 'CYSE 460', text: 'CYSE 460: Power Systems and Smart Grid Security', value: 'CYSE 460' },
+    { key: 'CYSE 461', text: 'CYSE 461: Power Grid Security', value: 'CYSE 461' },
+    { key: 'CYSE 462', text: 'CYSE 462: Mobile Devices and Network Security', value: 'CYSE 462' },
+    { key: 'CYSE 465', text: 'CYSE 465: Transportation Systems Design', value: 'CYSE 465' },
+    { key: 'CYSE 467', text: 'CYSE 467: GPS Security', value: 'CYSE 467' },
+    { key: 'CYSE 470', text: 'CYSE 470: Human Factors and Cyber Security Engineering', value: 'CYSE 470' },
+    { key: 'CYSE 476', text: 'CYSE 476: Cryptography Fundamentals', value: 'CYSE 476' },
+    { key: 'CYSE 477', text: 'CYSE 477: Intrusion Detection', value: 'CYSE 477' },
+    { key: 'CYSE 478', text: 'CYSE 478: Cyber Security Audit and Compliance', value: 'CYSE 478' },
+    { key: 'CYSE 479', text: 'CYSE 479: Methods of User Authentication', value: 'CYSE 479' },
+    { key: 'CYSE 480', text: 'CYSE 480: Reverse Software Engineering', value: 'CYSE 480' },
+    { key: 'CYSE 491', text: 'CYSE 491: Engineering Senior Seminar', value: 'CYSE 491' },
+    { key: 'CYSE 492', text: 'CYSE 492: Senior Advanced Design Project I', value: 'CYSE 492' },
+    { key: 'CYSE 493', text: 'CYSE 493: Senior Advanced Design Project II', value: 'CYSE 493' },
+    { key: 'CYSE 498', text: 'CYSE 498: Independent Study in Cyber Security Engineering', value: 'CYSE 498' },
+    { key: 'CYSE 499', text: 'CYSE 499: Special Topics in Cyber Security Engineering', value: 'CYSE 499' },
+    { key: 'CYSE 521', text: 'CYSE 521: Industrial Control Systems Security', value: 'CYSE 521' },
+    { key: 'CYSE 550', text: 'CYSE 550: Cyber Security Engineering Fundamentals', value: 'CYSE 550' },
+    { key: 'CYSE 570', text: 'CYSE 570: Fundamentals of Operating Systems', value: 'CYSE 570' },
+    { key: 'CYSE 580', text: 'CYSE 580: Hardware and Cyber Physical Systems', value: 'CYSE 580' },
+    { key: 'CYSE 587', text: 'CYSE 587: Cyber Security Systems Engineering', value: 'CYSE 587' },
+    { key: 'CYSE 610', text: 'CYSE 610: Networks and Cyber Security', value: 'CYSE 610' },
+    { key: 'CYSE 630', text: 'CYSE 630: Cyber Risk Analysis and Advanced Tools', value: 'CYSE 630' },
+    { key: 'CYSE 640', text: 'CYSE 640: Wireless Network Security', value: 'CYSE 640' },
+    { key: 'CYSE 650', text: 'CYSE 650: Topics in Cyber Security Engineering', value: 'CYSE 650' },
+    { key: 'CYSE 670', text: 'CYSE 670: Secure Design of Connected and Automated Vehicles', value: 'CYSE 670' },
+    { key: 'CYSE 680', text: 'CYSE 680: Advanced Manufacturing Automation Security', value: 'CYSE 680' },
+    { key: 'CYSE 681', text: 'CYSE 681: Secure Energy Efficient Supply Chains', value: 'CYSE 681' },
+    { key: 'CYSE 682', text: 'CYSE 682: Formal Methods for Cyber Physical Systems Security', value: 'CYSE 682' },
+    { key: 'CYSE 683', text: 'CYSE 683: Reverse Engineering Industrial Automation', value: 'CYSE 683' },
+    { key: 'CYSE 685', text: 'CYSE 685: Unmanned Aerial Systems Security', value: 'CYSE 685' },
+    { key: 'CYSE 689', text: 'CYSE 689: Artificial Intelligence Methods for Cybersecurity', value: 'CYSE 689' },
+    { key: 'CYSE 690', text: 'CYSE 690: Cyber Security Engineering Capstone Project', value: 'CYSE 690' },
+    { key: 'CYSE 698', text: 'CYSE 698: Independent Study and Research', value: 'CYSE 698' },
+    { key: 'CYSE 700', text: 'CYSE 700: Research Methodology and Pedagogy in Cyber Security Engineering', value: 'CYSE 700' },
+    { key: 'CYSE 701', text: 'CYSE 701: Advanced Cyber Security Systems Engineering', value: 'CYSE 701' },
+    { key: 'CYSE 720', text: 'CYSE 720: Security of Autonomous Systems', value: 'CYSE 720' },
+    { key: 'CYSE 750', text: 'CYSE 750: Secure Software Development Lifecycle', value: 'CYSE 750' },
+    { key: 'CYSE 799', text: 'CYSE 799: Special Topics in Cyber Security Engineering', value: 'CYSE 799' },
+  ];
+
+ // Period dropdown options
+ const semesterOptions = [
+  { key: 'summer', text: 'SUMMER', value: 'SUMMER' },
+  { key: 'spring', text: 'SPRING', value: 'SPRING' },
+  { key: 'fall', text: 'FALL', value: 'FALL' },
+];
 
   const [dataLoaded, setDataLoaded] = useState(false);
 
@@ -58,7 +121,7 @@ const Home = () => {
 
       console.log("verificar",user)
 
-      gtaApi
+     gtaApi
         .loadGTAApplicationInfo(user, config)
         .then(response => {
           const historyCourses = response.data.application_info?.gtaHistoryCourses || [];
@@ -66,17 +129,20 @@ const Home = () => {
           setData(response.data);
           setLoading(false);
           setDataLoaded(true); // Set the flag to prevent future calls
+          
+        
 
         })
         .catch(error => {
           console.error("Error fetching data:", error);
           setLoading(false);
         });
+        
     }
   }, [user, dataLoaded]);
 
   const handleAddCourse = () => {
-    setGtaHistoryCourses([...gtaHistoryCourses, { cyseId: "", semester: "", year: "" }]);
+     setGtaHistoryCourses([...gtaHistoryCourses, { cyseId: "", semester: "", year: "" }]);
   };
 
   // Delete a course
@@ -86,12 +152,12 @@ const Home = () => {
   };
 
   // Update a course
-  const handleCourseChange = (index, field, value) => {
-    const updatedCourses = gtaHistoryCourses.map((course, idx) =>
-      idx === index ? { ...course, [field]: value } : course
-    );
-    setGtaHistoryCourses(updatedCourses);
-  };
+   const handleCourseChange = (index, field, value) => {
+     const updatedCourses = gtaHistoryCourses.map((course, idx) =>
+       idx === index ? { ...course, [field]: value } : course
+     );
+     setGtaHistoryCourses(updatedCourses);
+   };
 
 
   const handleSaveChanges = async () =>  {
@@ -119,48 +185,20 @@ const Home = () => {
 
           response = await  gtaApi.updateGTAHistoryCourses(user, gtaHistoryCourses, config);
         }
+
+        if (response?.status === 200) {
+          Swal.fire({
+            title: 'Success',
+            text: 'Application submitted successfully!',
+            icon: 'success',
+            confirmButtonText: 'OK'
+          });
+
+        
+        } 
       
   };
 
-
-
-  // Render GTA history courses
-  const renderGTAHistoryCourses = () => {
-    if (!hasData(gtaHistoryCourses)) {
-      return <tr><td colSpan="4">No GTA history courses</td></tr>;
-    }
-    return gtaHistoryCourses.map((course, index) => (
-      <tr key={index}>
-        <td>
-          <input
-            type="text"
-            value={course.cyseId}
-            onChange={(e) => handleCourseChange(index, 'cyseId', e.target.value)}
-            placeholder="CYSE ID"
-          />
-        </td>
-        <td>
-          <input
-            type="text"
-            value={course.semester}
-            onChange={(e) => handleCourseChange(index, 'semester', e.target.value)}
-            placeholder="Semester"
-          />
-        </td>
-        <td>
-          <input
-            type="text"
-            value={course.year}
-            onChange={(e) => handleCourseChange(index, 'year', e.target.value)}
-            placeholder="Year"
-          />
-        </td>
-        <td>
-          <button onClick={() => handleDeleteCourse(index)}>Delete</button>
-        </td>
-      </tr>
-    ));
-  };
 
   if (loading) {
     return <p>Loading data...</p>;
@@ -173,7 +211,7 @@ const Home = () => {
 
   // If user data is available, display the name, else display a default message
   return (
-    <div className="page-container">
+    <Container className='gmu-theme'>
       <div className="content-container">
         {user && user.data ? (
           <h2>Welcome, {user.data.email}!</h2>  // Display the user's name
@@ -269,27 +307,83 @@ const Home = () => {
         </table>
 
         <h4>GTA History Courses</h4>
-        <button onClick={handleAddCourse}>Add New Course</button>
-        <table className="styled-table">
-          <thead>
-            <tr>
-              <th>CYSE ID</th>
-              <th>Semester</th>
-              <th>Year</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {renderGTAHistoryCourses()}
-          </tbody>
-        </table>
+        {
 
-        <button onClick={handleSaveChanges}>Save Changes</button>
+        <>
+        <Segment>
+        <Table celled>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell>CYSE-ID</Table.HeaderCell>
+                    <Table.HeaderCell>Semester</Table.HeaderCell>
+                    <Table.HeaderCell>Year</Table.HeaderCell>
+                    <Table.HeaderCell></Table.HeaderCell>
+                    
+                  </Table.Row>
+                </Table.Header>
+
+                <Table.Body>
+                  {!hasData(gtaHistoryCourses)&&(
+                    <Table.Row>
+                      <div>No GTA history courses</div>
+                      </Table.Row>
+                  )}
+
+                  
+                  {gtaHistoryCourses.map((entry, index) => (
+                    <Table.Row key={index}>
+                      <Table.Cell>
+                        <Dropdown
+                          selection
+                          options={courseOptions}
+                          value={entry.cyseId}
+                          onChange={(e, { value }) => handleCourseChange(index, 'cyseId', value)}
+                          placeholder='Select Course'
+                        />
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Dropdown
+                          selection
+                          options={semesterOptions}
+                          value={entry.semester}
+                          onChange={(e, { value }) => handleCourseChange(index, 'semester', value)}
+                          placeholder='Select Semester'
+                        />
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Form.Input
+                          value={entry.year}
+                          onChange={(e) => handleCourseChange(index, 'year', e.target.value)}
+                          placeholder='Enter Year'
+                        />
+                      </Table.Cell>
+
+
+                      <Table.Cell>
+                      <Button onClick={()=> handleDeleteCourse(index)} primary>Delete</Button>
+                      </Table.Cell>
+                    
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+
+              <Button onClick={handleAddCourse} primary>Add Row</Button>
+              </Segment>
+
+              <Segment>
+              <Button onClick={handleSaveChanges} primary>Save Changes</Button>
+              </Segment>
+        </>
+        
+        
+        
+        }
         {/* Status Legend Modal */}
         <StatusLegendModal getStatusIcon={getStatusIcon} />
 
       </div>
-    </div>
+    </Container>
 
   );
 };

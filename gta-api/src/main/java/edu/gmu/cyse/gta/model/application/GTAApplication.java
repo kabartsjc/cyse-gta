@@ -44,7 +44,15 @@ public class GTAApplication {
 	}
 
 	public void setGTAHistoryCourses(List<GTAHistoryCourse> gtaCourseHistoryList) {
-		this.gtaHistoryCourses = gtaCourseHistoryList;
+		if (gtaHistoryCourses.size()>0) {
+			int index = gtaHistoryCourses.size();
+			for (int i=0; i<gtaCourseHistoryList.size();i++) {
+				gtaHistoryCourses.add(index+i,gtaCourseHistoryList.get(i));
+			}
+			
+		} else {
+			this.gtaHistoryCourses = gtaCourseHistoryList;
+		}
 	}
 
 	public boolean isInternationalStudent() {
