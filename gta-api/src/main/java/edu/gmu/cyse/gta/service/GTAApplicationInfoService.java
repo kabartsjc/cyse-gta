@@ -13,9 +13,9 @@ public interface GTAApplicationInfoService {
 
     boolean hasGTAApplicationInfoWithUsername(String username);
 
-    GTAApplicationInfo saveGTAApplicationInfo(GTAApplicationInfo gtaApplication);
+    GTAApplicationInfo createGTAApplicationInfo(GTAApplicationInfo gtaApplication);
 
     void deleteGTAApplicationInfo(GTAApplicationInfo gtaApplication);
     
-    public GTAApplicationInfo updateGTAApplicationInfoByUsername(String username, GTAApplicationInfo newValues) ;
+    public GTAApplicationInfo updateGTAApplicationInfo(String username, GTAApplicationInfo newValues) ;
 }

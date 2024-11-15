@@ -42,12 +42,9 @@ public class GTAApplicationInfo {
 	private FILE_STATUS toefl_file_status= FILE_STATUS.nosubmited;
 	private FILE_STATUS student_transcript= FILE_STATUS.nosubmited;
 
-	private String submission_time;
-	private String last_update;
 	
 	public GTAApplicationInfo(String username) {
 		this.username = username;
-		submission_time = getTime();
 		
 	}
 	
@@ -63,78 +60,44 @@ public class GTAApplicationInfo {
 		Path path = Paths.get(cvPath);
 		if (Files.exists(path) && cv_file_status== FILE_STATUS.nosubmited) {
             cv_file_status=FILE_STATUS.inprocessing;
-        } 
+        } else if (Files.exists(path) ==false) {
+        	cv_file_status=FILE_STATUS.nosubmited;
+        }
+		
 		
 		String celtdPath = userFolderPath + File.separator + "celtd.pdf";
 		path = Paths.get(celtdPath);
 		if (Files.exists(path)&& celtd_file_status== FILE_STATUS.nosubmited) {
             celtd_file_status=FILE_STATUS.inprocessing;
-        } 
+        } else if (Files.exists(path) ==false)
+        	celtd_file_status=FILE_STATUS.nosubmited;
+		
 		
 		String toelfPath = userFolderPath + File.separator + "toelf.pdf";
 		path = Paths.get(toelfPath);
 		if (Files.exists(path) && toefl_file_status== FILE_STATUS.nosubmited) {
             toefl_file_status=FILE_STATUS.inprocessing;
-        } 
+        } else if (Files.exists(path) ==false)
+        	toefl_file_status=FILE_STATUS.nosubmited;
+		
 		
 		String transcPath = userFolderPath + File.separator + "transcript.pdf";
 		path = Paths.get(transcPath);
 		if (Files.exists(path)&& student_transcript== FILE_STATUS.nosubmited) {
             student_transcript=FILE_STATUS.inprocessing;
-        } 
-		
-		last_update = getTime();
-		
+        } else if (Files.exists(path) ==false)
+        	student_transcript=FILE_STATUS.nosubmited;
 	}
 
 	public GTAApplicationInfo() {}
 	
-	public String getTime() {
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-		LocalDateTime now = LocalDateTime.now();
-		return dtf.format(now);
-	}
 	
 	
 	public String getUsername() {
 		return username;
 	}
 	
-	public void setCyseAdminOfficeDecision(String user, DECISION_STATUS cyseAdminOfficeDecision) {
-		this.cyseAdminOfficeDecision = cyseAdminOfficeDecision;
-		last_update=getTime();
-	}
-
-	public void setCyseAdminComments(String user, String cyseAdminComments) {
-		this.cyseAdminComments = cyseAdminComments;
-		last_update=getTime();
-	}
-
-	public void setCyseChairDecision(String user,DECISION_STATUS cyseChairDecision) {
-		this.cyseChairDecision = cyseChairDecision;
-		last_update=getTime();
-
-	}
-
-	public void setCyseChairComments(String user, String cyseChairComments) {
-		this.cyseChairComments = cyseChairComments;
-		last_update=getTime();
-	}
-
-	public void setCourseAllocated(String user, String courseAllocated) {
-		this.courseAllocated = courseAllocated;
-		last_update=getTime();
-	}
-
-	public void setContractSigned(String user, boolean contractSigned) {
-		this.contractSigned = contractSigned;
-		last_update=getTime();
-	}
-
-	public void setLast_update(String last_update) {
-		this.last_update = last_update;
-	}
-
+	
 	public DECISION_STATUS getCyseAdminOfficeDecision() {
 		return cyseAdminOfficeDecision;
 	}
@@ -157,14 +120,6 @@ public class GTAApplicationInfo {
 
 	public boolean isContractSigned() {
 		return contractSigned;
-	}
-
-	public String getSubmission_time() {
-		return submission_time;
-	}
-
-	public String getLast_update() {
-		return last_update;
 	}
 
 

@@ -83,11 +83,11 @@ public class ApplicationController {
 
 				else if (applicationDataJson != null && user != null) {
 					application = ApplicationJSON.parser(username, applicationDataJson);
-					gtaApplicationService.saveGTAApplication(application);
+					gtaApplicationService.createGTAApplication(application);
 					user.setHasApplication(true);
 
 					gtaAppInfo = new GTAApplicationInfo(username);
-					gtaAppInfoService.saveGTAApplicationInfo(gtaAppInfo);
+					gtaAppInfoService.createGTAApplicationInfo(gtaAppInfo);
 
 					userService.saveUser(user);
 
@@ -154,7 +154,7 @@ public class ApplicationController {
 				}
 				gtaAppInfo.update(application);
 
-				gtaAppInfoService.saveGTAApplicationInfo(gtaAppInfo);
+				gtaAppInfoService.updateGTAApplicationInfo(username,gtaAppInfo);
 
 			} else
 				throw new InvalidFileTypeException(
@@ -181,15 +181,17 @@ public class ApplicationController {
 	@PutMapping("/courseHistory")
 	public ResponseEntity<?> updateCourseHistory(@RequestParam String gta_param_name,
 			HttpEntity<List<GTAHistoryCourse>> httpEntity) {
+		
+		String username = gta_param_name;
 
 		List<GTAHistoryCourse> gtacourseList = httpEntity.getBody();
 		
-		GTAApplication app = gtaApplicationService.getGTAApplicationByUsername(gta_param_name).orElse(null);
+		GTAApplication app = gtaApplicationService.getGTAApplicationByUsername(username).orElse(null);
 		GTAApplication app_n = null;
 
 		if (app != null) {
 			app.setGTAHistoryCourses(gtacourseList);
-			app_n = this.gtaApplicationService.saveGTAApplication(app);
+			app_n = this.gtaApplicationService.updateGTAApplicationByUsername(username, app);
 		}
 
 		if (app_n != null)

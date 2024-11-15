@@ -30,7 +30,7 @@ public class GTAApplicationInfoServiceImpl implements GTAApplicationInfoService 
 	}
 
 	@Override
-	public GTAApplicationInfo saveGTAApplicationInfo(GTAApplicationInfo gtaApplication) {
+	public GTAApplicationInfo createGTAApplicationInfo(GTAApplicationInfo gtaApplication) {
 		return gtaApplicationInfoRepository.save(gtaApplication);
 	}
 
@@ -40,7 +40,7 @@ public class GTAApplicationInfoServiceImpl implements GTAApplicationInfoService 
 	}
 
 	@Override
-	public GTAApplicationInfo updateGTAApplicationInfoByUsername(String username, GTAApplicationInfo newValues) {
+	public GTAApplicationInfo updateGTAApplicationInfo(String username, GTAApplicationInfo newValues) {
 		// Retrieve the existing application by username
 		GTAApplicationInfo existingApplication = gtaApplicationInfoRepository.findByUsername(username)
 				.orElseThrow(() -> new RuntimeException("GTAApplication not found for username: " + username));

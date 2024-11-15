@@ -107,6 +107,7 @@ const Home = () => {
     }
   };
 
+
   useEffect(() => {
     if (user && !dataLoaded) {
       const token = localStorage.getItem("authToken");

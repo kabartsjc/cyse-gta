@@ -13,7 +13,7 @@ public interface GTAApplicationService {
 
     boolean hasGTAApplicationWithUsername(String username);
 
-    GTAApplication saveGTAApplication(GTAApplication gtaApplication);
+    GTAApplication createGTAApplication(GTAApplication gtaApplication);
 
     void deleteGTAApplication(GTAApplication gtaApplication);
     

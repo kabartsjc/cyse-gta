@@ -40,7 +40,7 @@ public class ApplicationInfoJSON {
 		result.put("application_info", appl_info);
 		
 		JSONObject process_info = new JSONObject();
-		process_info.put("ApplicationSubmission", info.getSubmission_time());
+		process_info.put("ApplicationSubmission", app.getSubmission_time());
 		
 		process_info.put("CYSEAdminOfficeDecision", info.getCyseAdminOfficeDecision());
 		process_info.put("CYSEAdminComments", info.getCyseAdminComments());
@@ -51,7 +51,7 @@ public class ApplicationInfoJSON {
 		process_info.put("CourseAllocated", info.getCourseAllocated());
 		process_info.put("ContractSigned", info.isContractSigned());
 		
-		process_info.put("LastUpdate", info.getLast_update());
+		process_info.put("LastUpdate", app.getLast_update());
 		
 		process_info.put("CELTDSTATUS", info.getCeltd_file_status());
 		System.out.println(info.getCeltd_file_status());

@@ -30,7 +30,9 @@ public class GTAApplicationServiceImpl implements GTAApplicationService {
 	}
 
 	@Override
-	public GTAApplication saveGTAApplication(GTAApplication gtaApplication) {
+	public GTAApplication createGTAApplication(GTAApplication gtaApplication) {
+		gtaApplication.setSubmission_time();
+		gtaApplication.setLast_update();
 		return gtaApplicationRepository.save(gtaApplication);
 	}
 
@@ -46,8 +48,11 @@ public class GTAApplicationServiceImpl implements GTAApplicationService {
 	    GTAApplication existingApplication = gtaApplicationRepository.findByUsername(username)
 	        .orElseThrow(() -> new RuntimeException("GTAApplication not found for username: " + username));
 	    
+	    newValues.setLast_update();
+	    newValues.setSubmission_time(existingApplication.getSubmission_time());
+	    
 	    deleteGTAApplication(existingApplication);
-
+	    
 	    // Save the updated application
 	    return gtaApplicationRepository.save(newValues);
 	}
