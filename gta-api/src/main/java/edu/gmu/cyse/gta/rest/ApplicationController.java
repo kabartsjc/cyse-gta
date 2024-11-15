@@ -46,7 +46,7 @@ public class ApplicationController {
 	@Autowired
 	GTAApplicationServiceImpl gtaApplicationService;
 
-	public static final String BASE_DIR = "/home/kabart/gta_files";
+	public static final String BASE_DIR = "/home/adebarro/gta_files";
 
 	@PostMapping(value = "/application", consumes = "multipart/form-data")
 	@Operation(security = { @SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME) })
