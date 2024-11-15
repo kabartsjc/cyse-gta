@@ -12,6 +12,7 @@ import io.jsonwebtoken.security.Keys;
 
 import jakarta.annotation.PostConstruct;
 
+@SuppressWarnings("unused")
 @Component
 public class JWTConfig {
 	private String secret;

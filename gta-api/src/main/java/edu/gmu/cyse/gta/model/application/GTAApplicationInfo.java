@@ -4,8 +4,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import edu.gmu.cyse.gta.rest.ApplicationController;
 import jakarta.persistence.GeneratedValue;
@@ -19,11 +17,11 @@ public class GTAApplicationInfo {
 
 	private String username;
 
-	private enum DECISION_STATUS {
+	public enum DECISION_STATUS {
 		inprocessing, approved, deny, incompleted, notstarted
 	}
 	
-	private enum FILE_STATUS {
+	public enum FILE_STATUS {
 		nosubmited,inprocessing, checked, error
 	}
 

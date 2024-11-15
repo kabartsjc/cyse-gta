@@ -3,7 +3,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -21,22 +20,8 @@ public class TokenProvider {
 
     //@Value("${app.jwt.secret}")
     
-	@Autowired
-    private JWTConfig jwtConfig;
-	//private String jwtSecret;
-
-    //@Value("${app.jwt.expiration.ms}")
-    //private long jwtExpirationMs;
-
-    //@Value("${app.jwt.refreshExpiration.ms}")
-    //private long refreshExpirationMs;
-
-    private static final String TOKEN_TYPE = "JWT";
-    private static final String TOKEN_ISSUER = "order-api";
-    private static final String TOKEN_AUDIENCE = "order-app";
-    
-//    static SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
-    public static SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+	    @SuppressWarnings("deprecation")
+		public static SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     /**
      * Generates a JWT token based on the authenticated user's details.
@@ -69,7 +54,8 @@ public class TokenProvider {
         return String.join(",",auths);
     }
     
-    public static String generateTokenFromRefreshToken(String jwt) {
+    @SuppressWarnings("deprecation")
+	public static String generateTokenFromRefreshToken(String jwt) {
         try {
             // Step 1: Parse the existing JWT token using the new JwtParserBuilder
         	Claims claims = Jwts.parser()
@@ -114,13 +100,5 @@ public class TokenProvider {
         }
     }
 
-    /**
-     * Checks if a token is expired.
-     * 
-     * @param claims the claims of the token.
-     * @return true if the token is expired, false otherwise.
-     */
-    private boolean isTokenExpired(Claims claims) {
-        return claims.getExpiration().before(new Date());
-    }
+   
 }

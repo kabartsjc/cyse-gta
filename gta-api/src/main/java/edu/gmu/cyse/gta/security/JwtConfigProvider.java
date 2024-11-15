@@ -28,7 +28,8 @@ public class JwtConfigProvider {
     }
 
     private String generateSecretKey() {
-    	SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    	@SuppressWarnings("deprecation")
+		SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     	byte[] keyBytes = key.getEncoded();
 		String base64EncodedKey = Base64.getEncoder().encodeToString(keyBytes);
 		return base64EncodedKey;

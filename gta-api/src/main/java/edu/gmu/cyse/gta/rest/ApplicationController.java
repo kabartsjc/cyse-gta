@@ -110,6 +110,7 @@ public class ApplicationController {
 					} else {
 						String filePath = userFolderPath + File.separator + "cv.pdf";
 						Files.copy(cvFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+						gtaAppInfo.setCv_file_status(GTAApplicationInfo.FILE_STATUS.inprocessing)
 					}
 				}
 
@@ -123,6 +124,7 @@ public class ApplicationController {
 							String filePath = userFolderPath + File.separator + "celtd.pdf";
 							Files.copy(celtdCertFile.getInputStream(), Paths.get(filePath),
 									StandardCopyOption.REPLACE_EXISTING);
+							gtaAppInfo.setCeltd_file_status(GTAApplicationInfo.FILE_STATUS.inprocessing);
 						}
 					}
 
@@ -135,6 +137,7 @@ public class ApplicationController {
 							String filePath = userFolderPath + File.separator + "toelf.pdf";
 							Files.copy(toeflScoreFile.getInputStream(), Paths.get(filePath),
 									StandardCopyOption.REPLACE_EXISTING);
+							gtaAppInfo.setToefl_file_status(GTAApplicationInfo.FILE_STATUS.inprocessing);
 						}
 
 					}
@@ -150,6 +153,7 @@ public class ApplicationController {
 						String filePath = userFolderPath + File.separator + "transcript.pdf";
 						Files.copy(transcriptFile.getInputStream(), Paths.get(filePath),
 								StandardCopyOption.REPLACE_EXISTING);
+						gtaAppInfo.setStudent_transcript(GTAApplicationInfo.FILE_STATUS.inprocessing);
 					}
 				}
 				gtaAppInfo.update(application);

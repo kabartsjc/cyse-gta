@@ -1,4 +1,5 @@
 package edu.gmu.cyse.gta.rest;
+
 import edu.gmu.cyse.gta.exception.DuplicatedUserInfoException;
 import edu.gmu.cyse.gta.model.User;
 import edu.gmu.cyse.gta.rest.dto.AuthResponse;
@@ -31,66 +32,68 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final TokenProvider tokenProvider;
+	private final UserService userService;
+	private final PasswordEncoder passwordEncoder;
+	private final AuthenticationManager authenticationManager;
+	private final TokenProvider tokenProvider;
 
-    @PostMapping("/authenticate")
-    public AuthResponse login(@Valid @RequestBody LoginRequest loginRequest) {
-        String token = authenticateAndGetToken(loginRequest.getUsername(), loginRequest.getPassword());
-        return new AuthResponse(token);
-    }
-    
-    @PostMapping("/refresh")
-    public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestParam String refreshToken) {
-        try {
-            // Generate a new access token using the refresh token
-           String newAccessToken = tokenProvider.generateTokenFromRefreshToken(refreshToken);
+	@PostMapping("/authenticate")
+	public AuthResponse login(@Valid @RequestBody LoginRequest loginRequest) {
+		String token = authenticateAndGetToken(loginRequest.getUsername(), loginRequest.getPassword());
+		return new AuthResponse(token);
+	}
 
-            // Create a response map
-            Map<String, String> response = new HashMap<>();
-            response.put("accessToken", newAccessToken);
+	@PostMapping("/refresh")
+	public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestParam String refreshToken) {
+		try {
+			// Generate a new access token using the refresh token
+			@SuppressWarnings("static-access")
+			String newAccessToken = tokenProvider.generateTokenFromRefreshToken(refreshToken);
 
-            // Return the response map with the access token
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                 .body(Map.of("error", "Invalid or expired refresh token"));
-        }
-    }
+			// Create a response map
+			Map<String, String> response = new HashMap<>();
+			response.put("accessToken", newAccessToken);
 
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/signup")
-    public AuthResponse signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
-        if (userService.hasUserWithUsername(signUpRequest.getUsername())) {
-            throw new DuplicatedUserInfoException(String.format("Username %s already been used", signUpRequest.getUsername()));
-        }
-        if (userService.hasUserWithEmail(signUpRequest.getEmail())) {
-            throw new DuplicatedUserInfoException(String.format("Email %s already been used", signUpRequest.getEmail()));
-        }
+			// Return the response map with the access token
+			return ResponseEntity.ok(response);
+		} catch (RuntimeException ex) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(Map.of("error", "Invalid or expired refresh token"));
+		}
+	}
 
-        userService.saveUser(mapSignUpRequestToUser(signUpRequest));
+	@ResponseStatus(HttpStatus.CREATED)
+	@PostMapping("/signup")
+	public AuthResponse signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
+		if (userService.hasUserWithUsername(signUpRequest.getUsername())) {
+			throw new DuplicatedUserInfoException(
+					String.format("Username %s already been used", signUpRequest.getUsername()));
+		}
+		if (userService.hasUserWithEmail(signUpRequest.getEmail())) {
+			throw new DuplicatedUserInfoException(
+					String.format("Email %s already been used", signUpRequest.getEmail()));
+		}
 
-        String token = authenticateAndGetToken(signUpRequest.getUsername(), 
-        		signUpRequest.getPassword());
-        return new AuthResponse(token);
-    }
+		userService.saveUser(mapSignUpRequestToUser(signUpRequest));
 
-    private String authenticateAndGetToken(String username, String password) {
-        Authentication authentication = authenticationManager.authenticate(
-        		new UsernamePasswordAuthenticationToken(username, password));
-        return tokenProvider.generateToken(authentication);
-    }
+		String token = authenticateAndGetToken(signUpRequest.getUsername(), signUpRequest.getPassword());
+		return new AuthResponse(token);
+	}
 
-    private User mapSignUpRequestToUser(SignUpRequest signUpRequest) {
-        User user = new User();
-        user.setUsername(signUpRequest.getUsername());
-        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        user.setName(signUpRequest.getName());
-        user.setEmail(signUpRequest.getEmail());
-        user.setGmuID(signUpRequest.getGmuID());
-        user.setRole(WebSecurityConfig.USER);
-        return user;
-    }
+	private String authenticateAndGetToken(String username, String password) {
+		Authentication authentication = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+		return tokenProvider.generateToken(authentication);
+	}
+
+	private User mapSignUpRequestToUser(SignUpRequest signUpRequest) {
+		User user = new User();
+		user.setUsername(signUpRequest.getUsername());
+		user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+		user.setName(signUpRequest.getName());
+		user.setEmail(signUpRequest.getEmail());
+		user.setGmuID(signUpRequest.getGmuID());
+		user.setRole(WebSecurityConfig.USER);
+		return user;
+	}
 }

@@ -13,11 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 
@@ -27,7 +23,6 @@ import io.jsonwebtoken.security.Keys;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import javax.crypto.SecretKey;
 
@@ -36,8 +31,8 @@ import javax.crypto.SecretKey;
 @Component
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
-    private final UserDetailsService userDetailsService;
-    private final TokenProvider tokenProvider;
+  //  private final UserDetailsService userDetailsServicae;
+    //private final TokenProvider tokaenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
