@@ -17,7 +17,7 @@ import Swal from 'sweetalert2';
 function UserPage() {
   const Auth = useAuth();
   const user = Auth.getUser();
-  const isUser = user.data.rol[0] === 'USER';
+  const isUser = user.data.authorities === 'USER';
 
   const [cvFile, setCVFile] = useState(null);
   const [introGTAVideo, setIntroGTAVideo] = useState(null);

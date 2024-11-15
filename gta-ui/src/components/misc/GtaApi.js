@@ -14,8 +14,11 @@ export const gtaApi = {
   createOrder,
   getUserMe,
   submitApplication,
-  renewToken
+  renewToken,
+  loadGTAApplicationInfo,
+  updateGTAHistoryCourses
 }
+
 
 function authenticate(username, password) {
   return instance.post('/auth/authenticate', { username, password }, {
@@ -24,8 +27,12 @@ function authenticate(username, password) {
 }
 
 async function renewToken() {
-  const refreshToken = localStorage.getItem("refreshToken");
-  const response = await axios.post("http://localhost:8080/auth/refresh", { refreshToken });
+  const refreshToken = localStorage.getItem("authToken");
+  console.log(refreshToken)
+  const response = await axios.post("http://localhost:8080/auth/refresh", null,
+    {   params: {
+      refreshToken: refreshToken
+    } });
   const newAccessToken = response.data.accessToken;
   localStorage.setItem("authToken", newAccessToken);
 }
@@ -38,24 +45,60 @@ function signup(user) {
   })
 }
 
-async function submitApplication(user, config,  formData) {
+async function submitApplication(user, config, formData) {
   try {
-    // Combine application data and files in FormData
-    //const data = new FormData();
-   // Object.keys(applicationData).forEach(key => {
-     // formData.append(key, JSON.stringify(applicationData[key])); // Handle JSON objects
-  //  });
 
-    // Append files from formData
-   // formData.forEach((value, key) => data.append(key, value));
-
-    
     const response = await instance.post('/gta/application', formData, config);
 
-    return response.data;
-    
+    return response;
+
   } catch (error) {
     console.error('Error submitting application:', error);
+    throw error;
+  }
+}
+
+function loadGTAApplicationInfo(user, config) {
+  try {
+    const username = user.data.email;
+    console.log(username);
+
+    // Assuming you're sending 'username' as a query parameter
+    const response = instance.get('/app/gtainfo', {
+      params: {
+        gta_param_name: username  // Send username as a query parameter
+      },
+      ...config  // Spread the config to include Authorization headers and any other settings
+    });
+
+    return response;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+}
+
+
+
+async function updateGTAHistoryCourses(user, updatedCourses, config) {
+  try {
+    const username = user.data.email;
+    console.log(username)
+    let courses = updatedCourses;
+    await gtaApi.renewToken(); // Call your token renewal function here
+    config.headers["Authorization"] = `Bearer ${localStorage.getItem("authToken")}`;
+    console.log('config',config)
+
+    // Assuming the endpoint for updating course history is /gta/courseHistory
+    const response = await instance.put(`/gta/courseHistory?gta_param_name=${username}`, courses,{
+      
+      ...config  // Include Authorization headers and any other config settings
+    });
+
+
+    return response;
+  } catch (error) {
+    console.error("Error updating GTA history courses:", error);
     throw error;
   }
 }

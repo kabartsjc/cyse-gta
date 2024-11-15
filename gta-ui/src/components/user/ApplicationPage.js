@@ -2,29 +2,35 @@ import React, { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { gtaApi } from '../misc/GtaApi'
+import { useNavigate } from "react-router-dom";
+
+
 
 import { Container, Form, Button, Segment, Table, Dropdown } from 'semantic-ui-react';
 import Swal from 'sweetalert2';
 
 
-
-function UserPage() {
-  const Auth = useAuth();
-  const user = Auth.getUser();
-  const isUser = user.data.rol[0] === 'USER';
-
-  const [cvFile, setCVFile] = useState(null);
-  const [introGTAVideo, setIntroGTAVideo] = useState(null);
-
-  const [isInternationalStudentCB, setIsInternationalStudentCB] = useState(false);
-  const [celtdCertFile, setCeltdCertFile] = useState(null);
-  const [toeflScoreFile, setToeflScoreFile] = useState(null);
+function ApplicationPage() {
 
   const [wasGTACB, setWasGTACB] = useState(false);
   const [gtaCourseHistory, setGtaCourseHistory] = useState([{ cyseId: '', semester: '', year: '' }]);
-  const [studentHistory, setStudentHistory] = useState([{ cyseId: '', semester: '', year: '', grade: '' }]);
 
-  const [selectedCourses, setSelectedCourses] = useState([]);
+
+  const navigate = useNavigate();
+
+
+  const Auth = useAuth();
+  const user = Auth.getUser();
+  const isUser = user.data.authorities === 'USER';
+
+  const [cvFile, setCVFile] = useState(null);
+
+  const [isInternationalStudentCB, setIsInternationalStudentCB] = useState(false);
+
+  const [celtdCertFile, setCeltdCertFile] = useState(null);
+  const [transcriptFile, setTranscriptFile] = useState(null);
+
+  const [toeflScoreFile, setToeflScoreFile] = useState(null);
 
   const semesterOptions = [
     { key: 'summer', text: 'SUMMER', value: 'SUMMER' },
@@ -87,18 +93,12 @@ function UserPage() {
     { key: 'CYSE 799', text: 'CYSE 799: Special Topics in Cyber Security Engineering', value: 'CYSE 799' },
   ];
 
-  const gradeOptions = [
-    { key: 'A', text: 'A', value: 'A' },
-    { key: 'B', text: 'B', value: 'B' },
-    { key: 'C', text: 'C', value: 'C' },
-    { key: 'D', text: 'D', value: 'D' },
-    { key: 'F', text: 'F', value: 'F' },
-  ];
 
 
   const handleIntStdCheckboxChange = (e, { checked }) => {
     setIsInternationalStudentCB(checked);
   };
+
 
   const handleGTAHistCheckboxChange = (e, { checked }) => {
     setWasGTACB(checked);
@@ -108,107 +108,132 @@ function UserPage() {
     setFileFunction(e.target.files[0]);
   };
 
+  
+
   const handleGtaHistoryChange = (index, field, value) => {
     const updatedHistory = [...gtaCourseHistory];
     updatedHistory[index][field] = value;
     setGtaCourseHistory(updatedHistory);
   };
 
-  const handleStudentHistoryChange = (index, field, value) => {
-    const updatedHistory = [...studentHistory];
-    updatedHistory[index][field] = value;
-    setStudentHistory(updatedHistory);
-  };
 
   const addGtaHistoryRow = () => {
     setGtaCourseHistory([...gtaCourseHistory, { cyseId: '', semester: '', year: '' }]);
   };
 
-  const addStudentHistoryRow = () => {
-    setStudentHistory([...studentHistory, { cyseId: '', semester: '', year: '', grade: '' }]);
-  };
 
   //  const application = { username,cvFile, introGTAVideo,  isInternationalStudent, isInternationalStudent,wasGTA,studentHistoryCB,}
 
 
-  const handleOrderChange = (index, value) => {
-    const updatedCourses = [...selectedCourses];
-    updatedCourses[index].order = value;
-    setSelectedCourses(updatedCourses);
+  const [appyear, setYear] = useState('');
+  const [appperiod, setPeriod] = useState('');
+
+  const [introGTAVideo, setIntroGTAVideo] = useState('');
+
+
+
+  // Handle the year input change
+  const handleYearChange = (e) => {
+    setYear(e.target.value);
   };
 
+  const handlePeriodChange = (e, { value }) => {
+    setPeriod(value);
+  };
+
+  const handleVideoChange = (e, { value }) => {
+    setIntroGTAVideo(value);
+  };
+
+
+
+
+  // Period dropdown options
+  const periodOptions = [
+    { key: 'fall', text: 'FALL', value: 'FALL' },
+    { key: 'spring', text: 'SPRING', value: 'SPRING' },
+    { key: 'summer', text: 'SUMMER', value: 'SUMMER' },
+  ];
+
+
+  useEffect(() => {
+    // Show popup before the page is available
+    Swal.fire({
+      title: 'Welcome',
+      text: 'Please review your application details before submission.\n' +
+        'If you already submited the application before, the new application will replace the previous one.',
+      icon: 'info',
+      confirmButtonText: 'Proceed',
+      allowOutsideClick: false, // Prevent clicking outside to close
+      allowEscapeKey: false,   // Prevent using the escape key to close
+    }).then(() => {
+      console.log("Popup closed, user is viewing the page now.");
+    });
+  }, []);
+
+
   const handleSubmitApplication = async () => {
+
+
     try {
-      // Create a FormData object to hold the files
+
       const formData = new FormData();
+
+
 
       let form_error = false
 
       let form_error_descript = ""
 
 
-      if (cvFile) {
+
+
+      const user = Auth.getUser();
+      console.log("username:", user.data.email); // Debug line
+
+
+      formData.append('username', user.data.email)
+
+
+
         formData.append('cvFile', cvFile);
-      } else {
-        form_error = true
-        form_error_descript += 'CV File was not submitted!\n';
-      }
-
-
-      if (introGTAVideo) {
-        formData.append('introGTAVideo', introGTAVideo);
-      } else {
-        form_error = true
-        form_error_descript += 'Introduction Video was not submitted!\n';
-      }
-
+      
 
       // Create a JSON object for the application data
       const applicationData = {
         isInternationalStudent: isInternationalStudentCB,
         wasGTACB: wasGTACB,
+        appyear: appyear,
+        appperiod: appperiod,
+        introGTAVideo: introGTAVideo
+
       };
+
+      if (appyear === "" || appperiod === "") {
+        form_error = true
+        form_error_descript += 'Your must provided the YEAR and the Period of the Application!\n';
+      }
+
 
       // Only add student history if the student was a previous GTA
       if (wasGTACB) {
 
         if (gtaCourseHistory.length !== 0) {
           applicationData.gtaCourseHistory = gtaCourseHistory; // This contains previous course history with grades
-        } else {
-          form_error = true
-          form_error_descript += 'Your GTA history was not provided!\n';
         }
       }
 
-      // CHECK IF THE STUDENT FILL ITS GRADE
-      if (!studentHistory || studentHistory.length === 0) {
-        form_error = true
-        form_error_descript += 'Your course grade history was not provided !\n';
-      } else {
-        applicationData.studentHistory = studentHistory; // This contains previous course history with grades
+      // APPEND THE TRANSCRIPT
+      formData.append('transcriptFile', transcriptFile);
 
-      }
-
-      if (!selectedCourses || selectedCourses.length === 0) {
-        form_error = true
-        form_error_descript += 'You did not select the courses that you want to be a GTA!\n';
-      } else {
-        applicationData.selectedCourses = selectedCourses; // This contains previous course history with grades
-      }
 
       // Include additional files only for international students
       if (isInternationalStudentCB) {
         if (celtdCertFile) {
           formData.append('celtdCertFile', celtdCertFile);
-        } else {
-          form_error = true
-          form_error_descript += 'You did not provide the CELTD certificate!\n';
         }
         if (toeflScoreFile) {
           formData.append('toeflScoreFile', toeflScoreFile);
-        } else {
-          form_error = true
-          form_error_descript += 'You did not provide your TOEFL report!\n';
         }
       }
 
@@ -225,35 +250,47 @@ function UserPage() {
         const config = {
           headers: {
             //"Content-Type": "application/json",
-           // 'Content-Type': 'multipart/form-data',
+            // 'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`,
           },
         };
 
+        
 
-        let response = await gtaApi.submitApplication(user,config, formData);
+
+        let response = await gtaApi.submitApplication(user, config, formData);
+
+        console.log("Full Response:", response);
 
 
-        if (response.status === 401){
+
+        // Check for 401 status to handle token renewal
+        if (response?.status === 401) {
           await gtaApi.renewToken(); // Call your token renewal function here
           config.headers["Authorization"] = `Bearer ${localStorage.getItem("authToken")}`;
 
-          response = await gtaApi.submitApplication(user,config, formData);
-
+          response = await gtaApi.submitApplication(user, config, formData);
         }
-        
-        
-        else if (response.status === 200) {
+
+        console.log("Response Status:", response.status);
+        console.log("Response Data:", response.data);
+
+
+        if (response?.status === 200) {
           Swal.fire({
             title: 'Success',
             text: 'Application submitted successfully!',
             icon: 'success',
             confirmButtonText: 'OK'
           });
+
+          if (response?.status === 200) {
+            navigate("/home");
+          }
         } else {
           Swal.fire({
             title: 'Unexpected Response',
-            text: 'The server returned an unexpected response. Please try again.',
+            text: `The server returned an unexpected response: ${response?.status || 'No Status'}..`,
             icon: 'warning',
             confirmButtonText: 'OK'
           });
@@ -268,7 +305,7 @@ function UserPage() {
       }
 
     } catch (error) {
-      
+
       // Log error and display an error alert
       console.error('Submission error:', error);
       Swal.fire({
@@ -280,24 +317,70 @@ function UserPage() {
     }
   };
 
-  
+
 
   // Create the selected courses based on grades A or B
-  useEffect(() => {
-    const coursesToApply = studentHistory
-      .filter(entry => entry.grade === 'A' || entry.grade === 'B')
-      .map((entry, index) => ({ cyseId: entry.cyseId, order: index + 1 }));
-
-    setSelectedCourses(coursesToApply);
-  }, [studentHistory]);
 
   if (!isUser) {
     return <Navigate to='/' />;
   }
 
   return (
-    <Container>
+    <Container className='gmu-theme'>
       <Form>
+
+        <Segment>
+          <Form.Field>
+            <label>Year</label>
+            <Form.Input
+              type="number"
+              value={appyear}
+              onChange={handleYearChange}
+              placeholder="Enter the year"
+            />
+          </Form.Field>
+
+          {/* Period Dropdown */}
+          <Form.Field>
+            <label>Period</label>
+            <Dropdown
+              selection
+              options={periodOptions}
+              value={appperiod}
+              onChange={handlePeriodChange}
+              placeholder="Select Period"
+            />
+          </Form.Field>
+
+          <Form.Field>
+            <label>
+              <div> <h3>Video Submission Guidelines:</h3>
+                <ul>
+                  <il> - Please prepare a short video of you teaching a technical course or lab (irrespective of whether or not you are interested in teaching a recitation or lab).<br /></il>
+                  <il> - The video should be less than 3 minutes. <br /></il>
+                  <il> - Please publish the video on your Youtube site.<br /></il>
+                  <il> - You must submit the link of the video.<br /></il>
+
+                  <br />
+                  <il> - <b>Check that video does not require any permission - it is public.</b> <br /></il>
+                  <il> - The application would also be incomplete if the interview committee could not play the video.<br /></il>
+                  <il> -  Please double-check the video quality before you submit it. Video images should be clear and steady—no blurry, up-side-down videos, etc.<br /> </il>
+
+                </ul>
+
+              </div>
+
+            </label>
+            <Form.Input
+              type="string"
+              value={introGTAVideo}
+              onChange={handleVideoChange}
+              placeholder="Enter the Youtube Link of the video"
+            />
+          </Form.Field>
+
+
+        </Segment>
 
         {/* Segment for File Uploads */}
         <Segment>
@@ -307,11 +390,8 @@ function UserPage() {
             label='Submit your Curriculum-Vitae (pdf)'
             onChange={(e) => handleFileChange(e, setCVFile)}
           />
-          <Form.Input
-            type='file'
-            label='Please prepare a short video of you teaching a technical course or lab (irrespective of whether or not you are interested in teaching a recitation or lab). The video should be less than 3 minutes. Please convert the video into an mp4 file, preferably with codec H.264 mp4. We do not accept other video file formats. The application would also be incomplete if the interview committee could not play the video. Please double-check the video quality before you submit it. Video images should be clear and steady—no blurry, up-side-down videos, etc. If you have previously applied for an ECE GTA position and have already submitted your video, you do not need to submit the video again. We have a record of the video and can extract it from our files.'
-            onChange={(e) => handleFileChange(e, setIntroGTAVideo)}
-          />
+
+
         </Segment>
 
         <Segment>
@@ -401,94 +481,22 @@ function UserPage() {
         </Segment>
 
         <Segment>
-          <h4>CYSE Student History</h4>
-          <Table celled>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>CYSE ID</Table.HeaderCell>
-                <Table.HeaderCell>SEMESTER</Table.HeaderCell>
-                <Table.HeaderCell>YEAR</Table.HeaderCell>
-                <Table.HeaderCell>GRADE</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-
-            <Table.Body>
-              {studentHistory.map((entry, index) => (
-                <Table.Row key={index}>
-                  <Table.Cell>
-                    <Dropdown
-                      selection
-                      options={courseOptions}
-                      value={entry.cyseId}
-                      onChange={(e, { value }) => handleStudentHistoryChange(index, 'cyseId', value)}
-                      placeholder='Select Course'
-                    />
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Dropdown
-                      selection
-                      options={semesterOptions}
-                      value={entry.semester}
-                      onChange={(e, { value }) => handleStudentHistoryChange(index, 'semester', value)}
-                      placeholder='Select Semester'
-                    />
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Form.Input
-                      value={entry.year}
-                      onChange={(e) => handleStudentHistoryChange(index, 'year', e.target.value)}
-                      placeholder='Enter Year'
-                    />
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Dropdown
-                      selection
-                      options={gradeOptions}
-                      value={entry.grade}
-                      onChange={(e, { value }) => handleStudentHistoryChange(index, 'grade', value)}
-                      placeholder='Select Grade'
-                    />
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-
-          <Button onClick={addStudentHistoryRow} primary>Add Row</Button>
+          <h4>Student Records</h4>
+          <Form.Input
+            type='file'
+            label='You must submit your course transcript (PDF format). This file must be updated from the school website or official records, including the undergraduate and graduate classes. It must have at least this information: UNIVERSITY, COURSE NAME, YEAR, GRADE (A, B, C, D, or F)'
+            onChange={(e) => handleFileChange(e, setTranscriptFile)}
+          />
         </Segment>
 
-        {/* New Segment for Selected Courses */}
-        <Segment>
-          <h4>Select the courses that you want to apply</h4>
-          <Table celled>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>CYSE ID</Table.HeaderCell>
-                <Table.HeaderCell>Order</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {selectedCourses.map((course, index) => (
-                <Table.Row key={index}>
-                  <Table.Cell>{course.cyseId}</Table.Cell>
-                  <Table.Cell>
-                    <Form.Input
-                      type='number'
-                      value={course.order}
-                      onChange={(e) => handleOrderChange(index, e.target.value)}
-                      placeholder='Enter Order'
-                    />
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-        </Segment>
 
-        <Button onClick={handleSubmitApplication} primary>Submit Application</Button>
+
+        <Button onClick={handleSubmitApplication} primary>
+          Submit Application
+        </Button>
       </Form>
     </Container>
   );
 }
 
-export default UserPage
+export default ApplicationPage

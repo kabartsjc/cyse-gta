@@ -20,17 +20,17 @@ function Navbar() {
 
   const adminPageStyle = () => {
     const user = getUser()
-    return user && user.data.rol[0] === 'ADMIN' ? { "display": "block" } : { "display": "none" }
+    return user && user.data.authorities === 'ADMIN' ? { "display": "block" } : { "display": "none" }
   }
 
   const userPageStyle = () => {
     const user = getUser()
-    return user && user.data.rol[0] === 'USER' ? { "display": "block" } : { "display": "none" }
+    return user && user.data.authorities === 'USER' ? { "display": "block" } : { "display": "none" }
   }
 
   const getUserName = () => {
     const user = getUser()
-    return user ? user.data.name : ''
+    return user ? user.data.email : ''
   }
 
   return (
@@ -39,7 +39,7 @@ function Navbar() {
         <Menu.Item header>GTA Applications</Menu.Item>
         <Menu.Item as={Link} exact='true' to="/">Home</Menu.Item>
         <Menu.Item as={Link} to="/adminpage" style={adminPageStyle()}>AdminPage</Menu.Item>
-        <Menu.Item as={Link} to="/userpage" style={userPageStyle()}>UserPage</Menu.Item>
+        <Menu.Item as={Link} to="/applicationpage" style={userPageStyle()}> Application Page</Menu.Item>
         <Menu.Menu position='right'>
           <Menu.Item as={Link} to="/login" style={enterMenuStyle()}>Login</Menu.Item>
           <Menu.Item as={Link} to="/signup" style={enterMenuStyle()}>Sign Up</Menu.Item>

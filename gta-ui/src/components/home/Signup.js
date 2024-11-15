@@ -41,6 +41,8 @@ function Signup() {
       return
     }
 
+    console.log(gmuID)
+
     const user = { username, password, name, email, gmuID }
 
     try {

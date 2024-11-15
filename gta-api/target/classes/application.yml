@@ -1,9 +1,14 @@
 spring:
   application:
-    name: order-api
+    name: gta-api
   jpa:
     hibernate:
       ddl-auto: create
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: gtadb		
   datasource:
     url: jdbc:postgresql://localhost:5432/gtadb
     username: postgres
@@ -12,13 +17,13 @@ spring:
     multipart:
       enabled: true
       max-file-size: 10MB
-      max-request-size: 10MB
+      max-request-size: 50MB
 
 app:
   jwt:
     # Signing key for HS512 algorithm
     # In http://www.allkeysgenerator.com/ you can generate all kinds of keys
-    secret: v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVkYp
+    secret:  ${jwt.secret} 
     expiration:
       ms: 86400000
       minutes: 10

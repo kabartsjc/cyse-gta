@@ -5,7 +5,6 @@ import edu.gmu.cyse.gta.model.User;
 import edu.gmu.cyse.gta.rest.dto.UserDto;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public class UserMapperImpl implements UserMapper {
@@ -15,11 +14,11 @@ public class UserMapperImpl implements UserMapper {
         if (user == null) {
             return null;
         }
-        List<UserDto.OrderDto> orders = user.getOrders().stream().map(this::toUserDtoOrderDto).toList();
-        return new UserDto(user.getId(), user.getUsername(), user.getName(), user.getEmail(),user.getGmuID(),user.getRole(), orders);
+        return new UserDto(user.getId(), user.getUsername(), user.getName(), user.getEmail(),user.getGmuID(),user.getRole());
     }
 
-    private UserDto.OrderDto toUserDtoOrderDto(Order order) {
+    @SuppressWarnings("unused")
+	private UserDto.OrderDto toUserDtoOrderDto(Order order) {
         if (order == null) {
             return null;
         }
