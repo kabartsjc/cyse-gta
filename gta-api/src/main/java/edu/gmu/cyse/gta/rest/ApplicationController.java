@@ -110,7 +110,7 @@ public class ApplicationController {
 					} else {
 						String filePath = userFolderPath + File.separator + "cv.pdf";
 						Files.copy(cvFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
-						gtaAppInfo.setCv_file_status(GTAApplicationInfo.FILE_STATUS.inprocessing)
+						gtaAppInfo.setCv_file_status(GTAApplicationInfo.FILE_STATUS.inprocessing);
 					}
 				}
 
