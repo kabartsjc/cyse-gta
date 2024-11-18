@@ -18,6 +18,11 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 50MB
+  
+server:
+    address:10.151.206.174
+    port:8080
+
 
 app:
   jwt:
@@ -31,7 +36,7 @@ app:
       ms: 86400000
 
   cors:
-    allowed-origins: http://localhost:3000
+    allowed-origins: http://localhost, http://10.151.206.174
 
 logging:
   level:

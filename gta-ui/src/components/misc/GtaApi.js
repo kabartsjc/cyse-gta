@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { config } from '../../Constants'
 import { parseJwt } from './Helpers'
 
 export const gtaApi = {
@@ -19,9 +18,10 @@ export const gtaApi = {
   updateGTAHistoryCourses
 }
 
+const netaddr ="http://10.151.206.174:8080"
 
 function authenticate(username, password) {
-  return instance.post('/auth/authenticate', { username, password }, {
+  return instance.post(`/auth/authenticate`, { username, password }, {
     headers: { 'Content-type': 'application/json' }
   })
 }
@@ -29,7 +29,7 @@ function authenticate(username, password) {
 async function renewToken() {
   const refreshToken = localStorage.getItem("authToken");
   console.log(refreshToken)
-  const response = await axios.post("http://localhost:8080/auth/refresh", null,
+  const response = await instance.post(`/auth/refresh`, null,
     {   params: {
       refreshToken: refreshToken
     } });
@@ -40,7 +40,7 @@ async function renewToken() {
 
 
 function signup(user) {
-  return instance.post('/auth/signup', user, {
+  return instance.post(`/auth/signup`, user, {
     headers: { 'Content-type': 'application/json' }
   })
 }
@@ -48,7 +48,7 @@ function signup(user) {
 async function submitApplication(user, config, formData) {
   try {
 
-    const response = await instance.post('/gta/application', formData, config);
+    const response = await instance.post(`/gta/application`, formData, config);
 
     return response;
 
@@ -64,7 +64,7 @@ function loadGTAApplicationInfo(user, config) {
     console.log(username);
 
     // Assuming you're sending 'username' as a query parameter
-    const response = instance.get('/app/gtainfo', {
+    const response = instance.get(`/app/gtainfo`, {
       params: {
         gta_param_name: username  // Send username as a query parameter
       },
@@ -105,15 +105,15 @@ async function updateGTAHistoryCourses(user, updatedCourses, config) {
 
 
 function numberOfUsers() {
-  return instance.get('/public/numberOfUsers')
+  return instance.get(`/public/numberOfUsers`)
 }
 
 function numberOfOrders() {
-  return instance.get('/public/numberOfOrders')
+  return instance.get(`/public/numberOfOrders`)
 }
 
 function getUsers(user, username) {
-  const url = username ? `/api/users/${username}` : '/api/users'
+  const url = username ? `/api/users/${username}` : `/api/users`
   return instance.get(url, {
     headers: { 'Authorization': bearerAuth(user) }
   })
@@ -139,7 +139,7 @@ function deleteOrder(user, orderId) {
 }
 
 function createOrder(user, order) {
-  return instance.post('/api/orders', order, {
+  return instance.post(`/api/orders`, order, {
     headers: {
       'Content-type': 'application/json',
       'Authorization': bearerAuth(user)
@@ -148,7 +148,7 @@ function createOrder(user, order) {
 }
 
 function getUserMe(user) {
-  return instance.get('/api/users/me', {
+  return instance.get(`/api/users/me`, {
     headers: { 'Authorization': bearerAuth(user) }
   })
 }
@@ -156,7 +156,7 @@ function getUserMe(user) {
 // -- Axios
 
 const instance = axios.create({
-  baseURL: config.url.API_BASE_URL
+  baseURL: netaddr
 })
 
 instance.interceptors.request.use(function (config) {
