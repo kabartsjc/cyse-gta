@@ -18,7 +18,7 @@ export const gtaApi = {
   updateGTAHistoryCourses
 }
 
-const netaddr ="http://10.151.206.174:8080"
+const netaddr =`http://129.174.95.42:8080`
 
 function authenticate(username, password) {
   return instance.post(`/auth/authenticate`, { username, password }, {
