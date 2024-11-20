@@ -22,7 +22,7 @@ public class GTAApplication {
 	private String period;
 	private String year;
 	
-	private String urlVideo;
+	private String urlVideo=null;
 
 	private List<GTAHistoryCourse> gtaHistoryCourses;
 	
@@ -34,13 +34,10 @@ public class GTAApplication {
 		this.gtaHistoryCourses = new ArrayList<GTAHistoryCourse>();
 	}
 
-	public GTAApplication(String username, boolean isInternationalStudent, boolean wasGTA, 
+	public GTAApplication(String username, 
 			String year, String period, String url_video) {
 		super();
 		this.username = username;
-		this.isInternationalStudent = isInternationalStudent;
-		this.wasGTA = wasGTA;
-		
 		this.urlVideo=url_video;
 
 		this.year = year;
@@ -127,6 +124,10 @@ public class GTAApplication {
 	
 	public void setLast_update() {
 		this.last_update= getTime();
+	}
+	
+	public void setURLVIdeo(String url_video) {
+		this.urlVideo=url_video;
 	}
 	
 }

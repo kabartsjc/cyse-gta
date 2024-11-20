@@ -17,5 +17,8 @@ public interface GTAApplicationService {
 
     void deleteGTAApplication(GTAApplication gtaApplication);
     
-    public GTAApplication updateGTAApplicationByUsername(String username, GTAApplication newValues) ;
+    public GTAApplication updateGTAApplication(String username, GTAApplication newValues) ;
+    public GTAApplication updateGTAApplicationGTA(String username, GTAApplication newValues) ;
+
+
 }

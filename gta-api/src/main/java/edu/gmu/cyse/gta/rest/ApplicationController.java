@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import edu.gmu.cyse.gta.json.ApplicationJSON;
 import edu.gmu.cyse.gta.model.User;
 import edu.gmu.cyse.gta.model.application.GTAApplication;
 import edu.gmu.cyse.gta.model.application.GTAApplicationInfo;
+import edu.gmu.cyse.gta.model.application.GTAApplicationInfo.FILE_STATUS;
 import edu.gmu.cyse.gta.model.application.GTAHistoryCourse;
 import edu.gmu.cyse.gta.security.CustomUserDetails;
 import edu.gmu.cyse.gta.service.GTAApplicationInfoServiceImpl;
@@ -46,7 +48,8 @@ public class ApplicationController {
 	@Autowired
 	GTAApplicationServiceImpl gtaApplicationService;
 
-	public static final String BASE_DIR = "/home/adebarro/gta_files";
+	// @Value("${custom.folder}")
+	public static String BASE_DIR = "/home/kabart/gta_files";
 
 	@PostMapping(value = "/application", consumes = "multipart/form-data")
 	@Operation(security = { @SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME) })
@@ -75,19 +78,25 @@ public class ApplicationController {
 				if (application_exists) {
 					application = gtaApplicationService.getGTAApplicationByUsername(username).orElse(null);
 					GTAApplication newapplication = ApplicationJSON.parser(username, applicationDataJson);
-					gtaApplicationService.updateGTAApplicationByUsername(username, newapplication);
+					application = gtaApplicationService.updateGTAApplication(username, newapplication);
 
 					gtaAppInfo = gtaAppInfoService.getGTAApplicationByUsername(username).orElse(null);
+					
+					String video = newapplication.getUrlVideo();
+					if (video!=null) {
+						gtaAppInfo.setVideo_file_status(FILE_STATUS.inprocessing);
+					}
+					
 
 				}
 
 				else if (applicationDataJson != null && user != null) {
 					application = ApplicationJSON.parser(username, applicationDataJson);
-					gtaApplicationService.createGTAApplication(application);
+					application = gtaApplicationService.createGTAApplication(application);
 					user.setHasApplication(true);
 
 					gtaAppInfo = new GTAApplicationInfo(username);
-					gtaAppInfoService.createGTAApplicationInfo(gtaAppInfo);
+					gtaAppInfo = gtaAppInfoService.createGTAApplicationInfo(gtaAppInfo);
 
 					userService.saveUser(user);
 
@@ -114,34 +123,32 @@ public class ApplicationController {
 					}
 				}
 
-				if (application.isInternationalStudent()) {
-					if (celtdCertFile != null) {
-						String contentType = celtdCertFile.getContentType();
-						if (contentType != null && !contentType.equals("application/pdf")) {
-							error = true;
-							error_msg = error_msg + "- Uploaded CELTD file is not a PDF!\n";
-						} else {
-							String filePath = userFolderPath + File.separator + "celtd.pdf";
-							Files.copy(celtdCertFile.getInputStream(), Paths.get(filePath),
-									StandardCopyOption.REPLACE_EXISTING);
-							gtaAppInfo.setCeltd_file_status(GTAApplicationInfo.FILE_STATUS.inprocessing);
-						}
+				if (celtdCertFile != null) {
+					String contentType = celtdCertFile.getContentType();
+					if (contentType != null && !contentType.equals("application/pdf")) {
+						error = true;
+						error_msg = error_msg + "- Uploaded CELTD file is not a PDF!\n";
+					} else {
+						String filePath = userFolderPath + File.separator + "celtd.pdf";
+						Files.copy(celtdCertFile.getInputStream(), Paths.get(filePath),
+								StandardCopyOption.REPLACE_EXISTING);
+						gtaAppInfo.setCeltd_file_status(GTAApplicationInfo.FILE_STATUS.inprocessing);
+						application.setInternationalStudent(true);
 					}
+				}
 
-					if (toeflScoreFile != null) {
-						String contentType = toeflScoreFile.getContentType();
-						if (contentType != null && !contentType.equals("application/pdf")) {
-							error = true;
-							error_msg = error_msg + "- Uploaded TOELF file is not a PDF!\n";
-						} else {
-							String filePath = userFolderPath + File.separator + "toelf.pdf";
-							Files.copy(toeflScoreFile.getInputStream(), Paths.get(filePath),
-									StandardCopyOption.REPLACE_EXISTING);
-							gtaAppInfo.setToefl_file_status(GTAApplicationInfo.FILE_STATUS.inprocessing);
-						}
-
+				if (toeflScoreFile != null) {
+					String contentType = toeflScoreFile.getContentType();
+					if (contentType != null && !contentType.equals("application/pdf")) {
+						error = true;
+						error_msg = error_msg + "- Uploaded TOELF file is not a PDF!\n";
+					} else {
+						String filePath = userFolderPath + File.separator + "toelf.pdf";
+						Files.copy(toeflScoreFile.getInputStream(), Paths.get(filePath),
+								StandardCopyOption.REPLACE_EXISTING);
+						gtaAppInfo.setToefl_file_status(GTAApplicationInfo.FILE_STATUS.inprocessing);
+						application.setInternationalStudent(true);
 					}
-
 				}
 
 				if (transcriptFile != null) {
@@ -158,7 +165,8 @@ public class ApplicationController {
 				}
 				gtaAppInfo.update(application);
 
-				gtaAppInfoService.updateGTAApplicationInfo(username,gtaAppInfo);
+				gtaAppInfoService.updateGTAApplicationInfo(username, gtaAppInfo);
+				gtaApplicationService.updateGTAApplication(username, application);
 
 			} else
 				throw new InvalidFileTypeException(
@@ -185,17 +193,22 @@ public class ApplicationController {
 	@PutMapping("/courseHistory")
 	public ResponseEntity<?> updateCourseHistory(@RequestParam String gta_param_name,
 			HttpEntity<List<GTAHistoryCourse>> httpEntity) {
-		
+
 		String username = gta_param_name;
 
 		List<GTAHistoryCourse> gtacourseList = httpEntity.getBody();
-		
+
 		GTAApplication app = gtaApplicationService.getGTAApplicationByUsername(username).orElse(null);
 		GTAApplication app_n = null;
 
 		if (app != null) {
 			app.setGTAHistoryCourses(gtacourseList);
-			app_n = this.gtaApplicationService.updateGTAApplicationByUsername(username, app);
+			if (gtacourseList.size() > 0)
+				app.setWasGTA(true);
+			else
+				app.setWasGTA(false);
+
+			app_n = this.gtaApplicationService.updateGTAApplicationGTA(username, app);
 		}
 
 		if (app_n != null)

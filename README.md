@@ -14,8 +14,12 @@ server:
 
 #cyse-ui
 
+change the package.json
+      "start": "HOST=192.168.1.165 PORT=80 react-scripts start",
+
+
 change GtaApi.js
 
-replace the address of the request
+  replace the address of the request
     const netaddr ="http://10.151.206.174:8080"
 

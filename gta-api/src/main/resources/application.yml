@@ -20,9 +20,11 @@ spring:
       max-request-size: 50MB
   
 server:
-  address: 129.174.95.42
+  address: 192.168.1.165
   port: 8080
 
+custom:
+  folder:"/home/kabart/gta_files"
 
 app:
   jwt:
@@ -36,7 +38,7 @@ app:
       ms: 86400000
 
   cors:
-    allowed-origins: http://localhost, http://129.174.95.42
+    allowed-origins: http://localhost, http://192.168.1.165
 
 logging:
   level:

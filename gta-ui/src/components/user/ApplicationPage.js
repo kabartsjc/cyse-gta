@@ -6,14 +6,14 @@ import { useNavigate } from "react-router-dom";
 
 
 
-import { Container, Form, Button, Segment, Table, Dropdown } from 'semantic-ui-react';
+import { Container, Form, Button, Segment,  Dropdown } from 'semantic-ui-react';
 import Swal from 'sweetalert2';
 
 
 function ApplicationPage() {
 
-  const [wasGTACB, setWasGTACB] = useState(false);
-  const [gtaCourseHistory, setGtaCourseHistory] = useState([{ cyseId: '', semester: '', year: '' }]);
+  //const [wasGTACB, setWasGTACB] = useState(false);
+  //const [gtaCourseHistory, setGtaCourseHistory] = useState([{ cyseId: '', semester: '', year: '' }]);
 
 
   const navigate = useNavigate();
@@ -32,13 +32,13 @@ function ApplicationPage() {
 
   const [toeflScoreFile, setToeflScoreFile] = useState(null);
 
-  const semesterOptions = [
+ /*  const semesterOptions = [
     { key: 'summer', text: 'SUMMER', value: 'SUMMER' },
     { key: 'spring', text: 'SPRING', value: 'SPRING' },
     { key: 'fall', text: 'FALL', value: 'FALL' },
   ];
-
-  const courseOptions = [
+ */
+  /* const courseOptions = [
     { key: 'CYSE 101', text: 'CYSE 101: Introduction to Cyber Security Engineering', value: 'CYSE 101' },
     { key: 'CYSE 130', text: 'CYSE 130: Introduction to Computing for Digital Systems Engineering', value: 'CYSE 130' },
     { key: 'CYSE 211', text: 'CYSE 211: Operating Systems and Lab', value: 'CYSE 211' },
@@ -91,7 +91,7 @@ function ApplicationPage() {
     { key: 'CYSE 720', text: 'CYSE 720: Security of Autonomous Systems', value: 'CYSE 720' },
     { key: 'CYSE 750', text: 'CYSE 750: Secure Software Development Lifecycle', value: 'CYSE 750' },
     { key: 'CYSE 799', text: 'CYSE 799: Special Topics in Cyber Security Engineering', value: 'CYSE 799' },
-  ];
+  ]; */
 
 
 
@@ -100,26 +100,26 @@ function ApplicationPage() {
   };
 
 
-  const handleGTAHistCheckboxChange = (e, { checked }) => {
+  /* const handleGTAHistCheckboxChange = (e, { checked }) => {
     setWasGTACB(checked);
   };
-
+ */
   const handleFileChange = (e, setFileFunction) => {
     setFileFunction(e.target.files[0]);
   };
 
   
 
-  const handleGtaHistoryChange = (index, field, value) => {
+  /* const handleGtaHistoryChange = (index, field, value) => {
     const updatedHistory = [...gtaCourseHistory];
     updatedHistory[index][field] = value;
     setGtaCourseHistory(updatedHistory);
-  };
+  }; */
 
 
-  const addGtaHistoryRow = () => {
+ /*  const addGtaHistoryRow = () => {
     setGtaCourseHistory([...gtaCourseHistory, { cyseId: '', semester: '', year: '' }]);
-  };
+  }; */
 
 
   //  const application = { username,cvFile, introGTAVideo,  isInternationalStudent, isInternationalStudent,wasGTA,studentHistoryCB,}
@@ -201,8 +201,7 @@ function ApplicationPage() {
 
       // Create a JSON object for the application data
       const applicationData = {
-        isInternationalStudent: isInternationalStudentCB,
-        wasGTACB: wasGTACB,
+        //wasGTACB: wasGTACB,
         appyear: appyear,
         appperiod: appperiod,
         introGTAVideo: introGTAVideo
@@ -216,13 +215,13 @@ function ApplicationPage() {
 
 
       // Only add student history if the student was a previous GTA
-      if (wasGTACB) {
+      /* if (wasGTACB) {
 
         if (gtaCourseHistory.length !== 0) {
           applicationData.gtaCourseHistory = gtaCourseHistory; // This contains previous course history with grades
         }
       }
-
+ */
       // APPEND THE TRANSCRIPT
       formData.append('transcriptFile', transcriptFile);
 
@@ -422,7 +421,7 @@ function ApplicationPage() {
           )}
         </Segment>
 
-        <Segment>
+        {/* <Segment>
           <Form.Field>
             <Form.Checkbox
               label='Have you previously been a CYSE GTA?'
@@ -479,7 +478,7 @@ function ApplicationPage() {
             </>
           )}
         </Segment>
-
+ */}
         <Segment>
           <h4>Student Records</h4>
           <Form.Input

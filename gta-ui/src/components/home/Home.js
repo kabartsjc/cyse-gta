@@ -120,7 +120,6 @@ const Home = () => {
         },
       };
 
-      console.log("verificar",user)
 
      gtaApi
         .loadGTAApplicationInfo(user, config)
@@ -172,15 +171,10 @@ const Home = () => {
           },
         };
 
-        console.log("passei aqui33333"); // Debug line
-
 
         let response = await gtaApi.updateGTAHistoryCourses(user, gtaHistoryCourses, config);
 
-        console.log("passei aqui 525252", response)
-
         if (response?.status === 401) {
-          console.log('passei aqui')
           await gtaApi.renewToken(); // Call your token renewal function here
           config.headers["Authorization"] = `Bearer ${localStorage.getItem("authToken")}`;
 
@@ -195,7 +189,20 @@ const Home = () => {
             confirmButtonText: 'OK'
           });
 
-        
+          gtaApi
+          .loadGTAApplicationInfo(user, config)
+          .then(response => {
+            const historyCourses = response.data.application_info?.gtaHistoryCourses || [];
+            setGtaHistoryCourses(historyCourses);
+            setData(response.data);
+            setLoading(false);
+            setDataLoaded(true); // Set the flag to prevent future calls
+            
+          
+  
+          })
+          
+ 
         } 
       
   };
@@ -225,7 +232,7 @@ const Home = () => {
           <thead>
             <tr>
               <th>Username</th>
-              <th>International Student</th>
+              {/* <th>International Student</th> */}
               <th>Student was GTA</th>
               <th>Application Submission</th>
             </tr>
@@ -233,7 +240,7 @@ const Home = () => {
           <tbody>
             <tr>
               <td>{data.application_info.username || 'N/A'}</td>
-              <td>{data.application_info.isInternationalStudent ? "Yes" : "No"}</td>
+              {/* <td>{data.application_info.isInternationalStudent ? "Yes" : "No"}</td> */}
               <td>{data.application_info.wasGTA ? "Yes" : "No"}</td>
               <td>{data.process_info.ApplicationSubmission || 'N/A'}</td>
             </tr>
