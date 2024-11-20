@@ -340,7 +340,7 @@ function ApplicationPage() {
 
           {/* Period Dropdown */}
           <Form.Field>
-            <label>Period</label>
+            <label>Semester</label>
             <Dropdown
               selection
               options={periodOptions}
