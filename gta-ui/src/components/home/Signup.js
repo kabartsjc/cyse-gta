@@ -128,7 +128,7 @@ function Signup() {
               name='gmuID'
               icon='student'
               iconPosition='left'
-              placeholder='gmuID'
+              placeholder='G# number'
               value={gmuID}
               onChange={handleInputChange}
             />

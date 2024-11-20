@@ -160,8 +160,7 @@ function ApplicationPage() {
     // Show popup before the page is available
     Swal.fire({
       title: 'Welcome',
-      text: 'Please review your application details before submission.\n' +
-        'If you already submited the application before, the new application will replace the previous one.',
+      text: 'Please carefully review all your application materials before submission. If you have previously submitted, any new submission will overwrite the previous one. You can check the status of your submitted materials on the home page.',
       icon: 'info',
       confirmButtonText: 'Proceed',
       allowOutsideClick: false, // Prevent clicking outside to close
@@ -361,7 +360,7 @@ function ApplicationPage() {
                   <il> - You must submit the link of the video.<br /></il>
 
                   <br />
-                  <il> - <b>Check that video does not require any permission - it is public.</b> <br /></il>
+                  <il> - <b> Ensure your YouTube video is set to ‘Public’ and doesn’t require special permission.</b> <br /></il>
                   <il> - The application would also be incomplete if the interview committee could not play the video.<br /></il>
                   <il> -  Please double-check the video quality before you submit it. Video images should be clear and steady—no blurry, up-side-down videos, etc.<br /> </il>
 
@@ -483,7 +482,7 @@ function ApplicationPage() {
           <h4>Student Records</h4>
           <Form.Input
             type='file'
-            label='You must submit your course transcript (PDF format). This file must be updated from the school website or official records, including the undergraduate and graduate classes. It must have at least this information: UNIVERSITY, COURSE NAME, YEAR, GRADE (A, B, C, D, or F)'
+            label='You must submit your transcript in PDF format, updated from the school website or official records. The transcript should include both undergraduate and graduate classes and mist contain the following information: UNIVERSITY, COURSE NAME, YEAR, and GRADE (A, B, C, D, or F).'
             onChange={(e) => handleFileChange(e, setTranscriptFile)}
           />
         </Segment>

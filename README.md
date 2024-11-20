@@ -4,6 +4,11 @@ The system aims to manage the GTA process, including the feedback evaluation.
 #cyse-api
 
 change application.yaml (insert the correct ip)
+
+edu.gmu.cyse.gta.rest.ApplicationController.java
+	public static String BASE_DIR = "/home/kabart/gta_files";
+
+
   
 server:
     address:10.151.206.174

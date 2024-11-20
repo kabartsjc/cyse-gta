@@ -233,7 +233,7 @@ const Home = () => {
             <tr>
               <th>Username</th>
               {/* <th>International Student</th> */}
-              <th>Student was GTA</th>
+              <th>GTA previously?</th>
               <th>Application Submission</th>
             </tr>
           </thead>
@@ -252,7 +252,7 @@ const Home = () => {
           <tbody>
             {/* Line 1 */}
             <tr>
-              <th style={{ width: '20%' }}>CYSE Admin Office Decision</th>
+              <th style={{ width: '20%' }}>CYSE Admin Processing Status</th>
               <td>{getStatusIcon(data.process_info.CYSEAdminOfficeDecision || 'nosubmited')}</td>
               <th style={{ width: '20%' }}>CYSE Admin Comments</th>
               <td
